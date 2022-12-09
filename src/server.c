@@ -9,30 +9,20 @@ Server* Server_new()
 {
     Server* sv = malloc(sizeof(Server));
     if (!sv) __server_print_err("null pointer");
-    sv->start = Server_start;
-    sv->listenWith = Server_listenWith;
-    sv->listenAt = Server_listenAt;
+    sv->listen = Server_listen;
     sv->delete = Server_delete;
+    sv->ip4_addr = { 127, 0, 0, 1 };
+    sv->ip6_addr = NULL;
+    sv->port = 8080;
     return sv;
 }
 
-void Server_start(Server* sv, void (*callback)(ipaddr_t a, port_t p))
+void Server_listen(Server* sv, void (*callback)(const Server* sv))
 {
     if (!sv) __server_print_err("null pointer");
-    callback(sv->addr, sv->port);
-}
-
-void Server_listenWith(Server* sv, void (*callback)(ServerReq*, ServerRes*))
-{
-    if (!sv) __server_print_err("null pointer");
-    sv->listener = callback;
-}
-
-void Server_listenAt(Server* sv, ipaddr_t a, port_t p)
-{
-    if (!sv) __server_print_err("null pointer");
-    memcpy(sv->addr, a, 4*sizeof(a[0]));
-    sv->port = p;
+    if (!sv->ip4_addr && !sv->ip6_addr) sv->ip4_addr = { 127, 0, 0, 1 };
+    if (!sv->port) sv->port = 8080;
+    if (callback) callback(sv);
 }
 
 void Server_delete(Server** sv)
