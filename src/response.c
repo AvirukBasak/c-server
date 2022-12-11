@@ -5,6 +5,7 @@
 #include "errcodes.h"
 #include "io.h"
 #include "response.h"
+#include "socketio.h"
 
 ServerRes* ServerRes_new(sockfd_t clientfd)
 {
@@ -42,25 +43,25 @@ void ServerRes_writeBytes(ServerRes* res, const char* data, size_t size)
 void ServerRes_writeStr(ServerRes* res, const char* str)
 {
     __server_socket_try(res->clientfd, "client socket fd invalid");
-    __server_print_str(res->clientfd, str);
+    __server_sockwrite_str(res->clientfd, str);
 }
 
 void ServerRes_writeU64(ServerRes* res, uint64_t n)
 {
     __server_socket_try(res->clientfd, "client socket fd invalid");
-    __server_print_ui64(res->clientfd, n);
+    __server_sockwrite_ui64(res->clientfd, n);
 }
 
 void ServerRes_writeI64(ServerRes* res, int64_t n)
 {
     __server_socket_try(res->clientfd, "client socket fd invalid");
-    __server_print_i64(res->clientfd, n);
+    __server_sockwrite_i64(res->clientfd, n);
 }
 
 void ServerRes_writeHex(ServerRes* res, const void* p)
 {
     __server_socket_try(res->clientfd, "client socket fd invalid");
-    __server_print_ptr(res->clientfd, p);
+    __server_sockwrite_ptr(res->clientfd, p);
 }
 
 void ServerRes_send(ServerRes* res)

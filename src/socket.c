@@ -14,7 +14,6 @@
 
 int __server_socket_try(int retval, const char* msg) {
     if (retval <= -1
-        || retval == STDIN_FILENO
         || retval == STDOUT_FILENO
         || retval == STDERR_FILENO)
             __server_print_err(msg, E_ERRNO);
