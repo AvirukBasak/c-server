@@ -1,4 +1,9 @@
-#include "stdhead.h"
+#include <string.h>    // strlen, strerror
+#include <unistd.h>    // write
+#include <errno.h>     // errno
+#include <stdlib.h>    // exit, abort
+#include <stdio.h>     // fprintf, stderr
+
 #include "stdfunc.h"
 #include "io.h"
 
@@ -9,9 +14,9 @@ void __server_print_str(int fd, const char *s)
     write(fd, s, len);
 }
 
-void __server_print_ui64(int fd, const ui64_t n)
+void __server_print_ui64(int fd, const uint64_t n)
 {
-    ui64_t nb = n;
+    uint64_t nb = n;
     char s[21];
     s[20] = 0;    // null termination
     s[19] = '0';  // default number 0
@@ -24,14 +29,14 @@ void __server_print_ui64(int fd, const ui64_t n)
     __server_print_str(fd, &s[i]);
 }
 
-void __server_print_i64(int fd, const i64_t n)
+void __server_print_i64(int fd, const int64_t n)
 {
-    ui64_t nb = n < 0 ? -n : n;
+    uint64_t nb = n < 0 ? -n : n;
     if (n < 0) __server_print_str(fd, "-");
     __server_print_ui64(fd, nb);
 }
 
-void __server_print_ptr(int fd, const ptr_t p)
+void __server_print_ptr(int fd, const void *p)
 {
     char *b = (char*)(&p);
     char s[16];
@@ -41,7 +46,7 @@ void __server_print_ptr(int fd, const ptr_t p)
     bool is_bend = __server_std_is_litle_endian();
     int i = is_bend ? 7 : 0;
     for (int j = 0; (is_bend ? (i >= 0) : (i < 8)) && j < 16;) {
-        const ui8_t byte = b[i];
+        const uint8_t byte = b[i];
         char halfbyte0 = __server_std_to_hex(byte >> 4);
         char halfbyte1 = __server_std_to_hex(byte);
         if (halfbyte0 != '0' || halfbyte1 != '0')
@@ -59,10 +64,15 @@ void __server_print_ptr(int fd, const ptr_t p)
     else write(fd, s, 2*len);
 }
 
-void __server_print_err(const char *s)
+void __server_print_err(const char *message, int err_code)
 {
-    fprintf(stderr, "libserver: aborted");
-    if (!s) goto abort;
-    fprintf(stderr, ": %s\n", s);
-    abort: abort();
+    if (!err_code && errno)
+        fprintf(stderr, "libserver: %s: %s\n", message, strerror(errno));
+    else
+        fprintf(stderr, "libserver: error: %s\n", message);
+#ifdef DEBUG
+    abort();
+#else
+    exit(err_code ? err_code : errno);
+#endif
 }

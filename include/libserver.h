@@ -1,14 +1,15 @@
 #ifndef __LIBSERVER_H__
 #define __LIBSERVER_H__
 
-#include <stddef.h>
-#include <inttypes.h>
+#include <stddef.h>        // size_t
+#include <inttypes.h>      // uint8_t, uint16_t, uint64_t, int64_t
 
 typedef uint8_t ipaddr_t[4];
 typedef uint16_t port_t;
 
 typedef struct Server Server;
 typedef struct __server_t __server_t;
+
 typedef struct ServerReq ServerReq;
 typedef struct ServerRes ServerRes;
 

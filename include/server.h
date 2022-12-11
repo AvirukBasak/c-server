@@ -1,7 +1,9 @@
 #ifndef __SERVER_H__
 #define __SERVER_H__
 
-#include "stdhead.h"
+#include <stddef.h>        // size_t
+#include <inttypes.h>      // uint8_t, uint16_t, uint64_t, int64_t
+
 #include "request.h"
 #include "response.h"
 

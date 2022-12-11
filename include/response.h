@@ -1,7 +1,8 @@
 #ifndef __RESPONSE_H__
 #define __RESPONSE_H__
 
-#include "stdhead.h"
+#include <stddef.h>   // size_t
+#include <inttypes.h> // uint64_t, int64_t
 
 typedef struct ServerRes ServerRes;
 

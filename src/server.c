@@ -1,4 +1,6 @@
-#include "stdhead.h"
+#include <stdlib.h>    // malloc
+
+#include "errcodes.h"
 #include "io.h"
 #include "socket.h"
 #include "server.h"
@@ -9,8 +11,8 @@ Server* Server_new()
 {
     Server* sv = malloc(sizeof(Server));
     __server_t* priv = malloc(sizeof(__server_t));
-    if (!sv) __server_print_err("null pointer");
-    if (!priv) __server_print_err("null pointer");
+    if (!sv) __server_print_err("null pointer", E_NULLPTR);
+    if (!priv) __server_print_err("null pointer", E_NULLPTR);
     sv->priv = priv;
     sv->set_listener = Server_set_listener;
     sv->set_ipaddr = Server_set_ipaddr;
@@ -25,14 +27,14 @@ Server* Server_new()
 
 void Server_set_listener(Server* sv, void (*listener)(ServerReq*, ServerRes*))
 {
-    if (!sv) __server_print_err("null pointer");
-    if (!listener) __server_print_err("null listener callback function");
+    if (!sv) __server_print_err("null pointer", E_NULLPTR);
+    if (!listener) __server_print_err("null pointer", E_NULLPTR);
     sv->priv->listener = listener;
 }
 
 void Server_set_ipaddr(Server* sv, uint8_t a0, uint8_t a1, uint8_t a2, uint8_t a3)
 {
-    if (!sv) __server_print_err("null pointer");
+    if (!sv) __server_print_err("null pointer", E_NULLPTR);
     sv->priv->addr[0] = a0;
     sv->priv->addr[1] = a1;
     sv->priv->addr[2] = a2;
@@ -41,13 +43,13 @@ void Server_set_ipaddr(Server* sv, uint8_t a0, uint8_t a1, uint8_t a2, uint8_t a
 
 void Server_set_port(Server* sv, port_t port)
 {
-    if (!sv) __server_print_err("null pointer");
+    if (!sv) __server_print_err("null pointer", E_NULLPTR);
     sv->priv->port = port;
 }
 
 void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
 {
-    if (!sv) __server_print_err("null pointer");
+    if (!sv) __server_print_err("null pointer", E_NULLPTR);
     if (callback) callback(sv->priv->addr, sv->priv->port);
 }
 

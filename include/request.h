@@ -1,7 +1,7 @@
 #ifndef __REQUEST_H__
 #define __REQUEST_H__
 
-#include "stdhead.h"
+#include <stddef.h>    // size_t
 
 typedef struct ServerReq ServerReq;
 
