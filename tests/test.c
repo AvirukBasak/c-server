@@ -11,7 +11,7 @@ void listener(ServerReq* req, ServerRes* res) {
 }
 
 void listenerStart(ipaddr_t a, port_t p) {
-    printf("server running at %d.%d.%d.%d:%d\n", a[0], a[1], a[2], a[3], p);
+    printf("Server listening at %d.%d.%d.%d:%d\n", a[0], a[1], a[2], a[3], p);
 }
 
 int main(int argc, char *argv[])
@@ -21,5 +21,6 @@ int main(int argc, char *argv[])
     sv->set_ipaddr(sv, 0, 0, 0, 0);
     sv->set_port(sv, 42069);
     sv->listen(sv, listenerStart);
+    sv->delete(&sv);
     return 0;
 }
