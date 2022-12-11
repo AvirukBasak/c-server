@@ -7,7 +7,7 @@
 #include "stdfunc.h"
 #include "io.h"
 
-void __server_print_str(int fd, const char *s)
+void __server_print_str(int fd, const char* s)
 {
     if (!s) return;
     size_t len = strlen(s);
@@ -36,9 +36,9 @@ void __server_print_i64(int fd, const int64_t n)
     __server_print_ui64(fd, nb);
 }
 
-void __server_print_ptr(int fd, const void *p)
+void __server_print_ptr(int fd, const void* p)
 {
-    char *b = (char*)(&p);
+    char* b = (char*)(&p);
     char s[16];
     size_t len = 0;
     // most significant byte
@@ -64,12 +64,12 @@ void __server_print_ptr(int fd, const void *p)
     else write(fd, s, 2*len);
 }
 
-void __server_print_err(const char *message, int err_code)
+void __server_print_err(const char* msg, int err_code)
 {
     if (!err_code && errno)
-        fprintf(stderr, "libserver: %s: %s\n", message, strerror(errno));
+        fprintf(stderr, "libserver: %s: %s\n", msg, strerror(errno));
     else
-        fprintf(stderr, "libserver: error: %s\n", message);
+        fprintf(stderr, "libserver: error: %s\n", msg);
 #ifdef DEBUG
     abort();
 #else

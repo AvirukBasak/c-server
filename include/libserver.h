@@ -15,11 +15,11 @@ typedef struct ServerRes ServerRes;
 
 struct Server {
     /**
-     * @brief Sets listener callback. The callback is called when a request is received.
+     * @brief Sets handler callback. The callback is called when a request is received.
      * @param sv Pointer to Server struct
-     * @param listener Callback function of prototype void (ServerReq*, ServerRes*)
+     * @param handler Callback function of prototype void (ServerReq*, ServerRes*)
      */
-    void (*set_listener)(Server* sv, void (*listener)(ServerReq*, ServerRes*));
+    void (*set_handler)(Server* sv, void (*handler)(ServerReq*, ServerRes*));
     /**
      * @brief Sets host address. Example sv->set_addr(sv, 127, 0, 0, 1);
      * @param sv Pointer to Server struct

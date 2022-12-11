@@ -8,6 +8,10 @@ typedef struct ServerReq ServerReq;
 struct ServerReq {
     char* data;
     size_t size;
+    void (*delete)(ServerReq** res);
 };
+
+ServerReq* ServerReq_new();
+void ServerReq_delete(ServerReq** req);
 
 #endif

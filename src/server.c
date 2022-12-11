@@ -1,4 +1,5 @@
 #include <stdlib.h>    // malloc
+#include <stdbool.h>   // bool
 
 #include "errcodes.h"
 #include "io.h"
@@ -14,7 +15,7 @@ Server* Server_new()
     if (!sv) __server_print_err("null pointer", E_NULLPTR);
     if (!priv) __server_print_err("null pointer", E_NULLPTR);
     sv->priv = priv;
-    sv->set_listener = Server_set_listener;
+    sv->set_handler = Server_set_handler;
     sv->set_ipaddr = Server_set_ipaddr;
     sv->set_port = Server_set_port;
     sv->delete = Server_delete;
@@ -25,11 +26,11 @@ Server* Server_new()
     return sv;
 }
 
-void Server_set_listener(Server* sv, void (*listener)(ServerReq*, ServerRes*))
+void Server_set_handler(Server* sv, void (*handler)(ServerReq*, ServerRes*))
 {
     if (!sv) __server_print_err("null pointer", E_NULLPTR);
-    if (!listener) __server_print_err("null pointer", E_NULLPTR);
-    sv->priv->listener = listener;
+    if (!handler) __server_print_err("null pointer", E_NULLPTR);
+    sv->priv->handler = handler;
 }
 
 void Server_set_ipaddr(Server* sv, uint8_t a0, uint8_t a1, uint8_t a2, uint8_t a3)
@@ -50,7 +51,20 @@ void Server_set_port(Server* sv, port_t port)
 void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
 {
     if (!sv) __server_print_err("null pointer", E_NULLPTR);
+    sockfd_t hostfd = __server_socket_listen(sv->priv->addr, sv->priv->port);
     if (callback) callback(sv->priv->addr, sv->priv->port);
+    while (true) {
+        ServerReq* req = ServerReq_new();
+        ServerRes* res = ServerRes_new();
+        req->data = __server_socket_accept(hostfd);
+        req->size = strlen(req->data);
+        sv->priv->handler(req, res);
+        free(req->data);
+        req->delete(&req);
+        res->delete(&res);
+    }
+    __server_socket_close(hostfd);
+    sv->delete(&sv);
 }
 
 void Server_delete(Server** sv)

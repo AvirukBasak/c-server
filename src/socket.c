@@ -1,17 +1,54 @@
+#include <string.h>     // memset
 #include <strings.h>    // bzero
+#include <inttypes.h>   // uint32_t
+#include <unistd.h>     // close, write
 
 #include "errcodes.h"
 #include "io.h"
 #include "server.h"
 #include "socket.h"
 
-sockdesc_t __server_socket_new(ipaddr_t addr, port_t port) {
-    sockdesc_t sd = socket(AF_INET , SOCK_STREAM , 0);
-    if (sd < -1) __server_print_err("socket_new failed", E_ERRNO);
-    sockaddrin_t saddr;
-    bzero(&saddr, sizeof(saddr));
-    saddr.sin_family = AF_INET;
-    saddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    saddr.sin_port = htons(port);
-    return sd;
+int __server_socket_try(int retval, const char* msg) {
+    if (retval <= -1) __server_print_err(msg, E_ERRNO);
+    return retval;
+}
+
+sockfd_t __server_socket_listen(ipaddr_t addr, port_t port) {
+    sockfd_t hostfd = __server_socket_try(
+        socket(AF_INET , SOCK_STREAM , 0),
+        "socket creation failed"
+    );
+    sockaddrin_t hostaddr;
+    bzero(&hostaddr, sizeof(hostaddr));
+    hostaddr.sin_family = AF_INET;
+    hostaddr.sin_addr.s_addr = *(uint32_t*) addr;
+    hostaddr.sin_port = htons(port);
+    memset(hostaddr.sin_zero, 0, sizeof(hostaddr.sin_zero));
+    __server_socket_try(
+        bind(hostfd, (sockaddr_t*) &hostaddr, sizeof(hostaddr)),
+        "socket bind failed"
+    );
+    __server_socket_try(
+        listen(hostfd, SOCK_BACKLOG),
+        "socket listen failed"
+    );
+    return hostfd;
+}
+
+char* __server_socket_accept(sockfd_t hostfd)
+{
+    __server_socket_try(hostfd, "host socket fd invalid");
+    sockaddrin_t clientaddr;
+    socklen_t len = sizeof(clientaddr);
+    sockfd_t clientfd = __server_socket_try(
+        accept(hostfd, (sockaddr_t*) &clientaddr, &len),
+        "socket accept failed"
+    );
+    return "NULL";
+}
+
+void __server_socket_close(sockfd_t sockfd)
+{
+    __server_socket_try(sockfd, "socket fd invalid");
+    close(sockfd);
 }
