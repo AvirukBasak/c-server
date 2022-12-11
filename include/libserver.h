@@ -64,7 +64,7 @@ struct ServerRes {
     void (*writeStr)   (ServerRes* res, const char* str);
     void (*writeU64)   (ServerRes* res, uint64_t n);
     void (*writeI64)   (ServerRes* res, int64_t n);
-    void (*writeHex)   (ServerRes* res, void* p);
+    void (*writeHex)   (ServerRes* res, const void* p);
     void (*send)       (ServerRes* res);
 };
 
