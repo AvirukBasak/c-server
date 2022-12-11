@@ -2,7 +2,7 @@
 #include <strings.h>    // bzero
 #include <stdlib.h>     // realloc
 #include <inttypes.h>   // uint32_t
-#include <unistd.h>     // write, close
+#include <unistd.h>     // close
 #include <stdbool.h>    // bool
 
 #include "types.h"
@@ -13,7 +13,11 @@
 #include "socket.h"
 
 int __server_socket_try(int retval, const char* msg) {
-    if (retval <= -1) __server_print_err(msg, E_ERRNO);
+    if (retval <= -1
+        || retval == STDIN_FILENO
+        || retval == STDOUT_FILENO
+        || retval == STDERR_FILENO)
+            __server_print_err(msg, E_ERRNO);
     return retval;
 }
 
