@@ -1,6 +1,7 @@
 #include <stdlib.h>    // malloc
 #include <stdbool.h>   // bool
 
+#include "types.h"
 #include "errcodes.h"
 #include "io.h"
 #include "socket.h"
@@ -54,12 +55,9 @@ void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
     sockfd_t hostfd = __server_socket_listen(sv->priv->addr, sv->priv->port);
     if (callback) callback(sv->priv->addr, sv->priv->port);
     while (true) {
-        ServerReq* req = ServerReq_new();
-        ServerRes* res = ServerRes_new();
-        req->data = __server_socket_accept(hostfd);
-        req->size = strlen(req->data);
+        ServerReq* req = __server_socket_accept(hostfd);
+        ServerRes* res = ServerRes_new(req->clientfd);
         sv->priv->handler(req, res);
-        free(req->data);
         req->delete(&req);
         res->delete(&res);
     }

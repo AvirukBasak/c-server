@@ -4,13 +4,10 @@
 #include <stddef.h>        // size_t
 #include <inttypes.h>      // uint8_t, uint16_t, uint64_t, int64_t
 
+#include "types.h"
 #include "request.h"
 #include "response.h"
 
-typedef uint8_t ipaddr_t[4];
-typedef uint16_t port_t;
-
-typedef struct Server Server;
 typedef struct __server_t __server_t;
 
 struct Server {

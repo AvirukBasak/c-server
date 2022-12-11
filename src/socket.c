@@ -1,11 +1,14 @@
 #include <string.h>     // memset
 #include <strings.h>    // bzero
+#include <stdlib.h>     // realloc
 #include <inttypes.h>   // uint32_t
 #include <unistd.h>     // write, close
 #include <stdbool.h>    // bool
 
+#include "types.h"
 #include "errcodes.h"
 #include "io.h"
+#include "request.h"
 #include "server.h"
 #include "socket.h"
 
@@ -36,7 +39,7 @@ sockfd_t __server_socket_listen(ipaddr_t addr, port_t port) {
     return hostfd;
 }
 
-char* __server_socket_accept(sockfd_t hostfd)
+ServerReq* __server_socket_accept(sockfd_t hostfd)
 {
     __server_socket_try(hostfd, "host socket fd invalid");
     sockaddrin_t clientaddr;
@@ -45,6 +48,12 @@ char* __server_socket_accept(sockfd_t hostfd)
         accept(hostfd, (sockaddr_t*) &clientaddr, &len),
         "socket accept failed"
     );
+    ipaddr_t addr;
+    uint32_t sin_addr = clientaddr.sin_addr.s_addr;
+    addr[0] = ((uint8_t*) &sin_addr)[0];
+    addr[1] = ((uint8_t*) &sin_addr)[1];
+    addr[2] = ((uint8_t*) &sin_addr)[2];
+    addr[3] = ((uint8_t*) &sin_addr)[3];
     char* data = NULL;
     size_t data_sz = 0;
     do {
@@ -56,7 +65,7 @@ char* __server_socket_accept(sockfd_t hostfd)
         data_sz += sz;
         data[data_sz] = 0;
     } while(true);
-    return data;
+    return ServerReq_new(data, data_sz, clientfd, addr);
 }
 
 void __server_socket_close(sockfd_t sockfd)

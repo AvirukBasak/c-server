@@ -6,12 +6,15 @@
 
 typedef uint8_t ipaddr_t[4];
 typedef uint16_t port_t;
+typedef int sockfd_t;
 
 typedef struct Server Server;
 typedef struct __server_t __server_t;
 
 typedef struct ServerReq ServerReq;
+
 typedef struct ServerRes ServerRes;
+typedef struct __serverres_t __serverres_t;
 
 struct Server {
     /**
@@ -55,17 +58,22 @@ struct Server {
 };
 
 struct ServerReq {
+    ipaddr_t addr;
+    sockfd_t clientfd;
     char* data;
     size_t size;
+    void (*delete)(ServerReq** res);
 };
 
 struct ServerRes {
+    sockfd_t clientfd;
     void (*writeBytes) (ServerRes* res, const char* data, size_t size);
     void (*writeStr)   (ServerRes* res, const char* str);
     void (*writeU64)   (ServerRes* res, uint64_t n);
     void (*writeI64)   (ServerRes* res, int64_t n);
     void (*writeHex)   (ServerRes* res, const void* p);
     void (*send)       (ServerRes* res);
+    void (*delete)     (ServerRes** res);
 };
 
 Server* Server_new();

@@ -5,10 +5,12 @@
 #include "io.h"
 #include "response.h"
 
-ServerRes* ServerRes_new()
+ServerRes* ServerRes_new(sockfd_t clientfd)
 {
     ServerRes* res = malloc(sizeof(ServerRes));
     if (!res) __server_print_err("null pointer", E_NULLPTR);
+    __server_socket_try(clientfd, "client socket fd invalid");
+    res->clientfd = clientfd;
     res->writeBytes = ServerRes_writeBytes;
     res->writeStr = ServerRes_writeStr;
     res->writeU64 = ServerRes_writeU64;
