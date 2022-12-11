@@ -1,12 +1,13 @@
 #ifndef __SOCKET_H__
 #define __SOCKET_H__
 
-#include <sys/socket.h>
-#include <arpa/inet.h>
+#include <sys/socket.h>    // socket, bind, listen, accept, recv, send
+#include <arpa/inet.h>     // struct sockaddr, struct sockaddr_in, htonl, htons
 
 #include "server.h"
 
 #define SOCK_BACKLOG (100)
+#define SOCK_RECVLEN (4096)
 
 typedef int sockfd_t;
 typedef struct sockaddr sockaddr_t;

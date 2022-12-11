@@ -1,7 +1,8 @@
 #include <string.h>     // memset
 #include <strings.h>    // bzero
 #include <inttypes.h>   // uint32_t
-#include <unistd.h>     // close, write
+#include <unistd.h>     // write, close
+#include <stdbool.h>    // bool
 
 #include "errcodes.h"
 #include "io.h"
@@ -44,7 +45,18 @@ char* __server_socket_accept(sockfd_t hostfd)
         accept(hostfd, (sockaddr_t*) &clientaddr, &len),
         "socket accept failed"
     );
-    return "NULL";
+    char* data = NULL;
+    size_t data_sz = 0;
+    do {
+        char buffer[SOCK_RECVLEN];
+        size_t sz = recv(clientfd, buffer, SOCK_RECVLEN, 0);
+        if (!sz) break;
+        data = realloc(data, data_sz +sz +1);
+        memcpy(&data[data_sz], buffer, sz);
+        data_sz += sz;
+        data[data_sz] = 0;
+    } while(true);
+    return data;
 }
 
 void __server_socket_close(sockfd_t sockfd)
