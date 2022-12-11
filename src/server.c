@@ -10,15 +10,17 @@ Server* Server_new()
     Server* sv = malloc(sizeof(Server));
     if (!sv) __server_print_err("null pointer");
     sv->set_listener = Server_set_listener;
-    sv->set_ipaddr Server_set_ipaddr;
+    sv->set_ipaddr = Server_set_ipaddr;
     sv->set_port = Server_set_port;
     sv->delete = Server_delete;
     sv->listen = Server_listen;
     // init server
+    sv->set_ipaddr(sv, 0, 0, 0, 0);
+    sv->set_port(sv, 8080);
     return sv;
 }
 
-void Server_set_listener(Server* sv, void (*listener)(ServerReq*, ServerRes*)
+void Server_set_listener(Server* sv, void (*listener)(ServerReq*, ServerRes*))
 {
     if (!sv) __server_print_err("null pointer");
     if (!listener) __server_print_err("null listener callback function");
@@ -43,7 +45,7 @@ void Server_set_port(Server* sv, port_t port)
 void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
 {
     if (!sv) __server_print_err("null pointer");
-    if (callback) callback(sv);
+    if (callback) callback(sv->addr, sv->port);
 }
 
 void Server_delete(Server** sv)

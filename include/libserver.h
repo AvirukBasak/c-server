@@ -12,7 +12,7 @@ typedef struct ServerReq ServerReq;
 typedef struct ServerRes ServerRes;
 
 struct Server {
-    void (*set_listener) (Server* sv, void (*listener)(ServerReq*, ServerRes*);
+    void (*set_listener) (Server* sv, void (*listener)(ServerReq*, ServerRes*));
     void (*set_ipaddr)   (Server* sv, uint8_t a3, uint8_t a2, uint8_t a1, uint8_t a0);
     void (*set_port)     (Server* sv, port_t port);
     void (*delete)       (Server** sv);
