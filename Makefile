@@ -73,11 +73,11 @@ $(LIBRARIES):
 ## testing / execution
 
 test: rel $(TESTSRC)
-	@$(CC) $(CFLAGS) -I $(TARGET_DIR) $(TEST_DIR)/*.$(SRCEXT) -o $(TEST_DIR)/test-rel.out -L$(TARGET_DIR) -l$(LIB_NAME) $(LIB)
+	@$(CC) $(CFLAGS) -I $(TARGET_DIR) $(TEST_DIR)/test.$(SRCEXT) -o $(TEST_DIR)/test-rel.out -L$(TARGET_DIR) -l$(LIB_NAME) $(LIB)
 	./$(TEST_DIR)/test-rel.out
 
 testdbg: dbg $(TESTSRC)
-	@$(CC) $(CDBGFLAGS) -I $(TARGET_DIR) $(DBG_OBJECTS) $(TEST_DIR)/*.$(SRCEXT) -o $(TEST_DIR)/test-dbg.out $(LIB)
+	@$(CC) $(CDBGFLAGS) -I $(TARGET_DIR) $(DBG_OBJECTS) $(TEST_DIR)/test.$(SRCEXT) -o $(TEST_DIR)/test-dbg.out $(LIB)
 	$(DBG) $(TEST_DIR)/test-dbg.out
 
 ## mkdirp
