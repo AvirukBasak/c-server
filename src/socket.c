@@ -1,5 +1,4 @@
-#include <string.h>     // memset
-#include <strings.h>    // bzero
+#include <string.h>     // memset, strncmp
 #include <stdlib.h>     // realloc
 #include <inttypes.h>   // uint32_t
 #include <unistd.h>     // close
@@ -22,15 +21,14 @@ int __server_socket_try(int retval, const char* msg) {
 
 sockfd_t __server_socket_listen(ipaddr_t addr, port_t port) {
     sockfd_t hostfd = __server_socket_try(
-        socket(AF_INET , SOCK_STREAM , 0),
+        socket(AF_INET, SOCK_STREAM , 0),
         "socket creation failed"
     );
     sockaddrin_t hostaddr;
-    bzero(&hostaddr, sizeof(hostaddr));
+    memset(&hostaddr, 0, sizeof(hostaddr));
     hostaddr.sin_family = AF_INET;
     hostaddr.sin_addr.s_addr = *(uint32_t*) addr;
     hostaddr.sin_port = htons(port);
-    memset(hostaddr.sin_zero, 0, sizeof(hostaddr.sin_zero));
     __server_socket_try(
         bind(hostfd, (sockaddr_t*) &hostaddr, sizeof(hostaddr)),
         "socket bind failed"
@@ -59,15 +57,21 @@ ServerReq* __server_socket_accept(sockfd_t hostfd)
     addr[3] = ((uint8_t*) &sin_addr)[3];
     char* data = NULL;
     size_t data_sz = 0;
+    bool endreq = false;
     do {
-        char buffer[SOCK_RECVLEN];
+        char buffer[SOCK_RECVLEN +1];
         size_t sz = recv(clientfd, buffer, SOCK_RECVLEN, 0);
+        buffer[sz] = 0;
         if (!sz) break;
+        if (sz == 1 && buffer[0] == 0) endreq = true;                  // null
+        if (sz == 1 && buffer[0] == '\n') endreq = true;               // new line
+        if (sz == 2 && !strcmp("\r\n", buffer)) endreq = true;         // http request end
+        if (sz == 1 && (signed char) buffer[0] == EOF) endreq = true;  // end of file
         data = realloc(data, data_sz +sz +1);
         memcpy(&data[data_sz], buffer, sz);
         data_sz += sz;
         data[data_sz] = 0;
-    } while(true);
+    } while(!endreq);
     return ServerReq_new(data, data_sz, clientfd, addr);
 }
 

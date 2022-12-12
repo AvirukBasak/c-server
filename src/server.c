@@ -56,6 +56,7 @@ void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
     if (callback) callback(sv->priv->addr, sv->priv->port);
     while (true) {
         ServerReq* req = __server_socket_accept(hostfd);
+        printf("received request from %d.%d.%d.%d\n", req->addr[0], req->addr[1], req->addr[2], req->addr[3]);
         ServerRes* res = ServerRes_new(req->clientfd);
         sv->priv->handler(req, res);
         req->delete(&req);
