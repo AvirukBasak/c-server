@@ -1,5 +1,6 @@
 #include <stdlib.h>    // malloc
 #include <stdbool.h>   // bool
+#include <unistd.h>    // signal, SIG*
 
 #include "types.h"
 #include "errcodes.h"
@@ -10,8 +11,21 @@
 #include "response.h"
 #include "stdfunc.h"
 
+void __server_sigint_handler(int signum)
+{
+    if (signum != SIGINT) return;
+    printf("\r\n");
+    exit(0);
+}
+
+void __server_init()
+{
+    signal(SIGINT, __server_sigint_handler);
+}
+
 Server* Server_new()
 {
+    __server_init();
     Server* sv = malloc(sizeof(Server));
     __server_t* priv = malloc(sizeof(__server_t));
     if (!sv) __server_print_err("null pointer", E_NULLPTR);
@@ -58,7 +72,7 @@ void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
     while (true) {
         const char* time = NULL;
         ServerReq* req = __server_socket_accept(hostfd);
-        printf("%d.%d.%d.%d - - [%s] \"%.*s...\"\n",
+        printf("%d.%d.%d.%d - [%s] \"%.*s...\"\n",
             req->addr[0], req->addr[1], req->addr[2], req->addr[3],
             time = __server_std_gettime(),
             __server_std_get_sub_reqdata_end(req->data),

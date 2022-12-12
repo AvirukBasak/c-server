@@ -25,6 +25,9 @@ struct __server_t {
     void (*handler)(ServerReq*, ServerRes*);
 };
 
+void __server_sigint_handler(int signum);
+void __server_init();
+
 Server* Server_new();
 
 void Server_set_handler   (Server* sv, void (*handler)(ServerReq*, ServerRes*));
