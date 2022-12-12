@@ -10,16 +10,12 @@ void conn_handler(ServerReq* req, ServerRes* res) {
     res->send(res);
 }
 
-void start(ipaddr_t a, port_t p) {
-    printf("Server listening at %d.%d.%d.%d:%d\n", a[0], a[1], a[2], a[3], p);
-}
-
 int main(int argc, char *argv[])
 {
     Server* sv = Server_new();
     sv->set_handler(sv, conn_handler);
     sv->set_ipaddr(sv, 0, 0, 0, 0);
     sv->set_port(sv, 8080);
-    sv->listen(sv, start);
+    sv->listen(sv, NULL);
     return 0;
 }

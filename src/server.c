@@ -62,13 +62,23 @@ void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
 {
     if (!sv) __server_print_err("null pointer", E_NULLPTR);
     sockfd_t hostfd = __server_socket_listen(sv->priv->addr, sv->priv->port);
+    const char* time = NULL;
+    printf("[%s] - listening on %d.%d.%d.%d:%d\n",
+        time = __server_std_gettime(),
+        sv->priv->addr[0],
+        sv->priv->addr[1],
+        sv->priv->addr[2],
+        sv->priv->addr[3],
+        sv->priv->port
+    );
+    free((void*) time);
     if (callback) callback(sv->priv->addr, sv->priv->port);
     while (true) {
         const char* time = NULL;
         ServerReq* req = __server_socket_accept(hostfd);
-        printf("%d.%d.%d.%d - [%s] \"%.*s...\"\n",
-            req->addr[0], req->addr[1], req->addr[2], req->addr[3],
+        printf("[%s] - %d.%d.%d.%d \"%.*s...\"\n",
             time = __server_std_gettime(),
+            req->addr[0], req->addr[1], req->addr[2], req->addr[3],
             __server_std_get_sub_reqdata_end(req->data),
             req->data
         );
