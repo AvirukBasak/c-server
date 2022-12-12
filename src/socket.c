@@ -25,6 +25,9 @@ sockfd_t __server_socket_listen(ipaddr_t addr, port_t port) {
         socket(AF_INET, SOCK_STREAM , 0),
         "socket creation failed"
     );
+    int option = 1;
+    // immediately reuse socket once server quits
+    setsockopt(hostfd, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
     sockaddrin_t hostaddr;
     memset(&hostaddr, 0, sizeof(hostaddr));
     hostaddr.sin_family = AF_INET;
@@ -73,6 +76,11 @@ ServerReq* __server_socket_accept(sockfd_t hostfd)
         char buffer[SOCK_RECVLEN +1];
         size_t sz = recv(clientfd, buffer, SOCK_RECVLEN, 0);
         buffer[sz] = 0;
+#ifdef DEBUG
+        write(2, "[", 1);
+        write(2, buffer, sz);
+        write(2, "]\n", 2);
+#endif
         // connection closed, signalled by 0 clientfd
         if (!sz) return ServerReq_new(data, data_sz, 0, addr);
         endreq = __server_socket_endreq(buffer, sz);
