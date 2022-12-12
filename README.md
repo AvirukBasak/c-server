@@ -219,18 +219,59 @@ res->end(res);
 ```
 
 #### ServerRes::clientfd
+```c
+sockfd_t clientfd;
+```
+Client socket file descriptor.
+- type: `sockfd_t` aka `int`.
 
 #### ServerRes::writeBytes()
+```c
+void (*writeBytes)(ServerRes* res, const char* data, size_t size);
+```
+Writes raw bytes to response.
+- param: `res` Pointer to server response instance..
+- param: `data` Data to be written.
+- param: `size` Size of data in bytes.
 
 #### ServerRes::writeStr()
+```c
+void (*writeStr)(ServerRes* res, const char* str);
+```
+Writes ASCII character string to response..
+- param: `res` Pointer to server response instance.
+- param: `data` String to be written.
 
 #### ServerRes::writeU64()
+```c
+void (*writeU64)(ServerRes* res, uint64_t n);
+```
+Writes an unsigned number to response.
+- param: `res` Pointer to server response instance.
+- param: `n` The number itself.
 
 #### ServerRes::writeI64()
+```c
+void (*writeI64)(ServerRes* res, int64_t n);
+```
+Writes a signed number to response.
+- param: `res` Pointer to server response instance.
+- param: `n` The number itself.
 
 #### ServerRes::writeHex()
+```c
+void (*writeHex)(ServerRes* res, uint64_t n);
+```
+Writes a number to response in hex representation.
+- param: `res` Pointer to server response instance.
+- param: `n` The number itself.
 
 #### ServerRes::end()
+```c
+void (*end)(ServerRes* res);
+```
+Closes client socket file descriptor.
+- param: `res` Pointer to server response instance.
 
 #### ServerRes::delete()
 ```c
