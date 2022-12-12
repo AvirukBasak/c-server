@@ -149,7 +149,7 @@ Force exits threads on `^C`.
 ```c
 void (*delete)(Server** sv);
 ```
-Deletes server resources.
+Deletes server instance and frees resources. Sets instance to `NULL`.
 - param: `sv` Double pointer to Server.
 
 ### ServerReq
@@ -198,7 +198,7 @@ Client socket file descriptor.
 ```c
 void (*delete)(ServerReq** req);
 ```
-Deletes ServerReq instance and free resources.
+Deletes ServerReq instance and frees resources.
 Note that you don't need to call delete manually as it is automatically called after a response is sent.
 - param: `req` Double pointer to request instance. Sets instance to `NULL`.
 
@@ -284,7 +284,7 @@ Closes client socket file descriptor.
 ```c
 void (*delete)(ServerRes** res);
 ```
-Deletes ServerRes instance and free resources.
+Deletes ServerRes instance and frees resources.
 Note that you don't need to call delete manually as it is automatically called after a response is sent.
 - param: `res` Double pointer to response instance. Sets instance to `NULL`.
 
