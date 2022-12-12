@@ -58,7 +58,7 @@ void conn_handler(ServerReq* req, ServerRes* res) {
         "\r\n"
     );
     res->writeStr(res, "\r\n");
-    res->send(res);
+    res->end(res);
 }
 
 int main(int argc, char *argv[])

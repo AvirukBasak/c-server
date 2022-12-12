@@ -18,7 +18,7 @@ ServerRes* ServerRes_new(sockfd_t clientfd)
     res->writeU64 = ServerRes_writeU64;
     res->writeI64 = ServerRes_writeI64;
     res->writeHex = ServerRes_writeHex;
-    res->send = ServerRes_send;
+    res->end = ServerRes_end;
     res->delete = ServerRes_delete;
     return res;
 }
@@ -64,7 +64,7 @@ void ServerRes_writeHex(ServerRes* res, uint64_t n)
     __server_sockwrite_ptr(res->clientfd, (void*) n);
 }
 
-void ServerRes_send(ServerRes* res)
+void ServerRes_end(ServerRes* res)
 {
     if (res->clientfd < 0) return;
     __server_socket_try(res->clientfd, "client socket fd invalid");

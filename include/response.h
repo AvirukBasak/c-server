@@ -13,7 +13,7 @@ struct ServerRes {
     void (*writeU64)   (ServerRes* res, uint64_t n);
     void (*writeI64)   (ServerRes* res, int64_t n);
     void (*writeHex)   (ServerRes* res, uint64_t n);
-    void (*send)       (ServerRes* res);
+    void (*end)        (ServerRes* res);
     void (*delete)     (ServerRes** res);
 };
 
@@ -25,6 +25,6 @@ void ServerRes_writeStr   (ServerRes* res, const char* str);
 void ServerRes_writeU64   (ServerRes* res, uint64_t n);
 void ServerRes_writeI64   (ServerRes* res, int64_t n);
 void ServerRes_writeHex   (ServerRes* res, uint64_t n);
-void ServerRes_send       (ServerRes* res);
+void ServerRes_end        (ServerRes* res);
 
 #endif
