@@ -5,6 +5,7 @@ Simple server library in C.
 - Build with `make`.
 - Copy library from `target/`.
 - See [api](#api) below or [test](tests/test.c) for example.
+- See the simpler [helloworld](tests/helloworld.c) server.
 - Start demo server with `make test`.
 
 ## API
