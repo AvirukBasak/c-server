@@ -58,12 +58,13 @@ struct Server {
 };
 
 struct ServerReq {
-    ipaddr_t addr;
-    sockfd_t clientfd;
     char* data;
     size_t size;
+    ipaddr_t addr;
+    sockfd_t clientfd;
     void (*delete)(ServerReq** res);
 };
+
 
 struct ServerRes {
     sockfd_t clientfd;
