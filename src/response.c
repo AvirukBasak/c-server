@@ -58,10 +58,10 @@ void ServerRes_writeI64(ServerRes* res, int64_t n)
     __server_sockwrite_i64(res->clientfd, n);
 }
 
-void ServerRes_writeHex(ServerRes* res, const void* p)
+void ServerRes_writeHex(ServerRes* res, uint64_t n)
 {
     __server_socket_try(res->clientfd, "client socket fd invalid");
-    __server_sockwrite_ptr(res->clientfd, p);
+    __server_sockwrite_ptr(res->clientfd, (void*) n);
 }
 
 void ServerRes_send(ServerRes* res)
