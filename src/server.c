@@ -1,4 +1,4 @@
-#include <stdlib.h>    // malloc
+#include <stdlib.h>    // malloc, free
 #include <stdbool.h>   // bool
 
 #include "types.h"
@@ -95,7 +95,7 @@ void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
                 req->addr[0], req->addr[1], req->addr[2], req->addr[3]
             );
             free((void*) datetime);
-            free(req);
+            req->delete(&req);
             continue;
         }
         ServerRes* res = ServerRes_new(req->clientfd);
