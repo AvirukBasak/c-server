@@ -9,29 +9,55 @@
  * @param res Server response.
  */
 void conn_handler(ServerReq* req, ServerRes* res) {
-    res->writeStr(res, "HTTP/1.1 OK\r\n\r\n");
+    res->writeStr(res, "HTTP/1.1 OK\r\n");
+    res->writeStr(res, "Content-Type: text/html\r\n");
+    res->writeStr(res, "Server: tcp-server\r\n");
+    res->writeStr(res, "\r\n");
     res->writeStr(res,
+        "<!DOCTYPE html>\n"
         "<html>\n"
         "<head>\n"
-        "    <meta charset=\"utf-8\">\n"
-        "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n"
-        "    <meta name=\"keywords\" content=\"\">\n"
-        "    <meta name=\"description\" content=\"\">\n"
-        "    <meta name=\"viewport\" content=\"width=device-width, height=device-height, user-scalable=no\">\n"
-        "    <title>Demo</title>\n"
+        "    <meta charset=\"utf-8\"/>\n"
+        "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"/>\n"
+        "    <meta name=\"keywords\" content=\"\"/>\n"
+        "    <meta name=\"description\" content=\"\"/>\n"
+        "    <meta name=\"viewport\" content=\"width=device-width, height=device-height, user-scalable=no\"/>\n"
+        "    <title>Demo Server</title>\n"
+        "    <style>\n"
+        "        * {\n"
+        "            font-size: 130%;\n"
+        "            font-family: monospace;\n"
+        "        }\n"
+        "        body {\n"
+        "            margin: 10px;\n"
+        "        }\n"
+        "        pre {\n"
+        "            width: 100%;\n"
+        "            overflow: scroll;\n"
+        "        }\n"
+        "        h1 {\n"
+        "            font-size: 190%;\n"
+        "            font-family: monospace;\n"
+        "        }\n"
+        "    </style>\n"
         "</head>\n"
         "<body>\n"
+        "    <h1>Recieved Data</h1>\n"
         "    <pre>\n"
-        "Recieved data:\n"
     );
     res->writeBytes(res, req->data, req->size);
+    res->writeStr(res, "Server Time: ");
+    const char* datetime = server_gettime();
+    res->writeStr(res, datetime);
+    free((void*) datetime);
+    res->writeStr(res, "\n");
     res->writeStr(res,
-        "...truncated\n"
         "    </pre>\n"
         "</body>\n"
         "</html>\n"
-        "\r\n\r\n"
+        "\r\n"
     );
+    res->writeStr(res, "\r\n");
     res->send(res);
 }
 
