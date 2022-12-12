@@ -41,6 +41,16 @@ sockfd_t __server_socket_listen(ipaddr_t addr, port_t port) {
     return hostfd;
 }
 
+bool __server_socket_endreq(const char* data, size_t sz)
+{
+    if (data[sz -1] == 0) return true;                            // null
+    if ((signed char) data[sz -1] == EOF) return true;            // end of file
+    if (data[sz -4] == '\r' && data[sz -3] == '\n'
+     && data[sz -2] == '\r' && data[sz -1] == '\n') return true;  // http request end
+    if (data[sz -2] == '\n' && data[sz -1] == '\n') return true;  // custom request end
+    return false;
+}
+
 ServerReq* __server_socket_accept(sockfd_t hostfd)
 {
     __server_socket_try(hostfd, "host socket fd invalid");
@@ -63,13 +73,9 @@ ServerReq* __server_socket_accept(sockfd_t hostfd)
         char buffer[SOCK_RECVLEN +1];
         size_t sz = recv(clientfd, buffer, SOCK_RECVLEN, 0);
         buffer[sz] = 0;
-        if (!sz) {
-            return ServerReq_new(data, data_sz, 0, addr);              // connection closed, signalled by 0 clientfd
-        }
-        if (sz == 1 && buffer[0] == 0) endreq = true;                  // null
-        if (sz == 1 && buffer[0] == '\n') endreq = true;               // new line
-        if (sz == 2 && !strcmp("\r\n", buffer)) endreq = true;         // http request end
-        if (sz == 1 && (signed char) buffer[0] == EOF) endreq = true;  // end of file
+        // connection closed, signalled by 0 clientfd
+        if (!sz) return ServerReq_new(data, data_sz, 0, addr);
+        endreq = __server_socket_endreq(buffer, sz);
         data = realloc(data, data_sz +sz +1);
         memcpy(&data[data_sz], buffer, sz);
         data_sz += sz;

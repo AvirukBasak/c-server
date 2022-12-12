@@ -9,10 +9,11 @@
 #include "request.h"
 
 #define SOCK_BACKLOG (100)
-#define SOCK_RECVLEN (4096)
+#define SOCK_RECVLEN (1024)
 
 int __server_socket_try(int retval, const char* msg);
 sockfd_t __server_socket_listen(ipaddr_t addr, port_t port);
+bool __server_socket_endreq(const char* data, size_t sz);
 ServerReq* __server_socket_accept(sockfd_t hostfd);
 void __server_socket_close(sockfd_t sockfd);
 

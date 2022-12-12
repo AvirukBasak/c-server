@@ -4,9 +4,18 @@
 
 void conn_handler(ServerReq* req, ServerRes* res) {
     res->writeStr(res, "HTTP/1.1 OK\r\n\r\n");
-    res->writeStr(res, "Recieved data:<html><body><pre>\r\n");
+    res->writeStr(res,
+        "<html>\n"
+        "<body>\n"
+        "    <pre>recieved data: "
+    );
     res->writeBytes(res, req->data, req->size);
-    res->writeStr(res, "</pre></body></html>\r\n...truncated\r\n\r\n");
+    res->writeStr(res,
+        "...truncated</pre>\n"
+        "</body>\n"
+        "</html>\n"
+        "\r\n\r\n"
+    );
     res->send(res);
 }
 
