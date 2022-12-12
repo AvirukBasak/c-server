@@ -129,7 +129,7 @@ struct ServerReq {
      */
     sockfd_t clientfd;
     /**
-     * @brief Delete ServerReq instance and free resources
+     * @brief Deletes ServerReq instance and free resources
      * @param req Double pointer to request instance
      */
     void (*delete)(ServerReq** req);
@@ -147,43 +147,43 @@ struct ServerRes {
      */
     sockfd_t clientfd;
     /**
-     * @brief Write raw bytes to response
+     * @brief Writes raw bytes to response
      * @param res Pointer to server response instance
      * @param data Data to be written
      * @param size Size of data in bytes
      */
     void (*writeBytes)(ServerRes* res, const char* data, size_t size);
     /**
-     * @brief Write ASCII character string to response
+     * @brief Writes ASCII character string to response
      * @param res Pointer to server response instance
      * @param data String to be written
      */
     void (*writeStr)(ServerRes* res, const char* str);
     /**
-     * @brief Write an unsigned number to response
+     * @brief Writes an unsigned number to response
      * @param res Pointer to server response instance
      * @param n The number itself
      */
     void (*writeU64)(ServerRes* res, uint64_t n);
     /**
-     * @brief Write a signed number to response
+     * @brief Writes a signed number to response
      * @param res Pointer to server response instance
      * @param n The number itself
      */
     void (*writeI64)(ServerRes* res, int64_t n);
     /**
-     * @brief Write a number to response in hex representation
+     * @brief Writes a number to response in hex representation
      * @param res Pointer to server response instance
      * @param n The number itself
      */
     void (*writeHex)(ServerRes* res, uint64_t n);
     /**
-     * @brief Close client socket file descriptor
+     * @brief Closes client socket file descriptor
      * @param res Pointer to server response instance
      */
-    void (*send)(ServerRes* res);
+    void (*end)(ServerRes* res);
     /**
-     * @brief Delete ServerRes instance and free resources
+     * @brief Deletes ServerRes instance and free resources
      * @param res Double pointer to response instance
      */
     void (*delete)(ServerRes** res);
@@ -192,7 +192,7 @@ struct ServerRes {
 // from apifunc.h: misc api functions
 
 /**
- * @brief Get current date and time. Useful for logs.
+ * @brief Gets current date and time. Useful for logs.
  * @return char* Remember to free it.
  */
 const char* server_gettime();
