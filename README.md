@@ -149,8 +149,8 @@ Force exits threads on `^C`.
 ```c
 void (*delete)(Server** sv);
 ```
-Deletes server instance and frees resources. Sets instance to `NULL`.
-- param: `sv` Double pointer to Server.
+Deletes server instance and frees resources.
+- param: `sv` Double pointer to Server. Sets instance to `NULL`.
 
 ### ServerReq
 ```c

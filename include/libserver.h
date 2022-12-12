@@ -94,7 +94,7 @@ struct Server {
      */
     void (*listen)(Server* sv, void (*callback)(ipaddr_t, port_t));
     /**
-     * @brief Deletes server resources
+     * @brief Deletes server instance and frees resources.
      * @param sv Double pointer to Server instance. Sets instance to `NULL`.
      */
     void (*delete)(Server** sv);
@@ -137,7 +137,7 @@ struct ServerReq {
      */
     sockfd_t clientfd;
     /**
-     * @brief Deletes ServerReq instance and free resources.
+     * @brief Deletes ServerReq instance and frees resources.
      * Note that you don't need to call delete manually as it is automatically called after a response is sent.
      * @param req Double pointer to request instance. Sets instance to `NULL`.
      */
@@ -192,7 +192,7 @@ struct ServerRes {
      */
     void (*end)(ServerRes* res);
     /**
-     * @brief Deletes ServerRes instance and free resources.
+     * @brief Deletes ServerRes instance and frees resources.
      * Note that you don't need to call delete manually as it is automatically called after a response is sent.
      * @param res Double pointer to response instance. Sets instance to `NULL`.
      */
