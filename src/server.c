@@ -74,10 +74,21 @@ void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
     free((void*) time);
     if (callback) callback(sv->priv->addr, sv->priv->port);
     while (true) {
-        const char* time = NULL;
         ServerReq* req = __server_socket_accept(hostfd);
+        // log request reciept
+        if (req->size) {
+            const char* time = NULL;
+            printf("[%s] - %d.%d.%d.%d \"%.*s...\"\n",
+                time = __server_std_gettime(),
+                req->addr[0], req->addr[1], req->addr[2], req->addr[3],
+                __server_std_get_sub_reqdata_end(req->data),
+                req->data
+            );
+            free((void*) time);
+        }
         // connection closed by client, drop request
-        if (!req->data) {
+        // note the || below, this if condition is not an inverse of the previous condition
+        if (!req->clientfd || !req->size) {
             const char* time = NULL;
             printf("[%s] - %d.%d.%d.%d client closed connection\n",
                 time = __server_std_gettime(),
@@ -87,13 +98,6 @@ void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
             free(req);
             continue;
         }
-        printf("[%s] - %d.%d.%d.%d \"%.*s...\"\n",
-            time = __server_std_gettime(),
-            req->addr[0], req->addr[1], req->addr[2], req->addr[3],
-            __server_std_get_sub_reqdata_end(req->data),
-            req->data
-        );
-        free((void*) time);
         ServerRes* res = ServerRes_new(req->clientfd);
         sv->priv->handler(req, res);
         req->delete(&req);
