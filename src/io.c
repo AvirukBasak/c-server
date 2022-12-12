@@ -4,7 +4,7 @@
 
 #include "io.h"
 
-void __server_print_err(const char* msg, int err_code)
+void server_print_err(const char* msg, int err_code)
 {
     if (!err_code && errno)
         fprintf(stderr, "libserver: %s: %s\n", msg, strerror(errno));

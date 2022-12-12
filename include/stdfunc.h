@@ -6,9 +6,9 @@
 
 #define MIN(a,b) (a<b?a:b)
 
-bool __server_std_is_litle_endian();
-char __server_std_to_hex(const uint8_t _4bits);
-const char* __server_std_gettime();
-int __server_std_get_sub_reqdata_end(const char* reqdata);
+bool        server_std_is_litle_endian();
+char        server_std_to_hex(const uint8_t _4bits);
+const char* server_std_gettime();
+int         server_std_get_sub_reqdata_end(const char* reqdata);
 
 #endif

@@ -11,19 +11,19 @@
 #include "stdfunc.h"
 #include "sighandlers.h"
 
-void __server_init()
+void server_init()
 {
-    signal(SIGINT, __server_sigint_handler);
-    signal(SIGPIPE, __server_sigpipe_handler);
+    signal(SIGINT, server_sigint_handler);
+    signal(SIGPIPE, server_sigpipe_handler);
 }
 
 Server* Server_new()
 {
-    __server_init();
+    server_init();
     Server* sv = malloc(sizeof(Server));
-    __server_t* priv = malloc(sizeof(__server_t));
-    if (!sv) __server_print_err("null pointer", E_NULLPTR);
-    if (!priv) __server_print_err("null pointer", E_NULLPTR);
+    server_privdata_t* priv = malloc(sizeof(server_privdata_t));
+    if (!sv) server_print_err("null pointer", E_NULLPTR);
+    if (!priv) server_print_err("null pointer", E_NULLPTR);
     sv->priv = priv;
     sv->set_handler = Server_set_handler;
     sv->set_ipaddr = Server_set_ipaddr;
@@ -38,14 +38,14 @@ Server* Server_new()
 
 void Server_set_handler(Server* sv, void (*handler)(ServerReq*, ServerRes*))
 {
-    if (!sv) __server_print_err("null pointer", E_NULLPTR);
-    if (!handler) __server_print_err("null pointer", E_NULLPTR);
+    if (!sv) server_print_err("null pointer", E_NULLPTR);
+    if (!handler) server_print_err("null pointer", E_NULLPTR);
     sv->priv->handler = handler;
 }
 
 void Server_set_ipaddr(Server* sv, uint8_t a0, uint8_t a1, uint8_t a2, uint8_t a3)
 {
-    if (!sv) __server_print_err("null pointer", E_NULLPTR);
+    if (!sv) server_print_err("null pointer", E_NULLPTR);
     sv->priv->addr[0] = a0;
     sv->priv->addr[1] = a1;
     sv->priv->addr[2] = a2;
@@ -54,17 +54,17 @@ void Server_set_ipaddr(Server* sv, uint8_t a0, uint8_t a1, uint8_t a2, uint8_t a
 
 void Server_set_port(Server* sv, port_t port)
 {
-    if (!sv) __server_print_err("null pointer", E_NULLPTR);
+    if (!sv) server_print_err("null pointer", E_NULLPTR);
     sv->priv->port = port;
 }
 
 void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
 {
-    if (!sv) __server_print_err("null pointer", E_NULLPTR);
-    sockfd_t hostfd = __server_socket_listen(sv->priv->addr, sv->priv->port);
+    if (!sv) server_print_err("null pointer", E_NULLPTR);
+    sockfd_t hostfd = server_socket_listen(sv->priv->addr, sv->priv->port);
     const char* datetime = NULL;
     printf("[%s] - listening on %d.%d.%d.%d:%d\n",
-        datetime = __server_std_gettime(),
+        datetime = server_std_gettime(),
         sv->priv->addr[0],
         sv->priv->addr[1],
         sv->priv->addr[2],
@@ -73,15 +73,15 @@ void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
     );
     free((void*) datetime);
     if (callback) callback(sv->priv->addr, sv->priv->port);
-    while (!__sigint_stop) {
-        ServerReq* req = __server_socket_accept(hostfd);
+    while (!sigint_stop) {
+        ServerReq* req = server_socket_accept(hostfd);
         // log request reciept
         if (req->size) {
             const char* datetime = NULL;
             printf("[%s] - %d.%d.%d.%d \"%.*s...\"\n",
-                datetime = __server_std_gettime(),
+                datetime = server_std_gettime(),
                 req->addr[0], req->addr[1], req->addr[2], req->addr[3],
-                __server_std_get_sub_reqdata_end(req->data),
+                server_std_get_sub_reqdata_end(req->data),
                 req->data
             );
             free((void*) datetime);
@@ -91,7 +91,7 @@ void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
         if (!req->clientfd || !req->size) {
             const char* datetime = NULL;
             printf("[%s] - %d.%d.%d.%d client closed connection\n",
-                datetime = __server_std_gettime(),
+                datetime = server_std_gettime(),
                 req->addr[0], req->addr[1], req->addr[2], req->addr[3]
             );
             free((void*) datetime);
@@ -103,7 +103,7 @@ void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
         req->delete(&req);
         res->delete(&res);
     }
-    __server_socket_close(hostfd);
+    server_socket_close(hostfd);
     sv->delete(&sv);
 }
 

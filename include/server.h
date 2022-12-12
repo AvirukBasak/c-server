@@ -8,7 +8,7 @@
 #include "request.h"
 #include "response.h"
 
-typedef struct __server_t __server_t;
+typedef struct server_privdata_t server_privdata_t;
 
 struct Server {
     void (*set_handler)  (Server* sv, void (*handler)(ServerReq*, ServerRes*));
@@ -16,16 +16,16 @@ struct Server {
     void (*set_port)     (Server* sv, port_t port);
     void (*listen)       (Server* sv, void (*callback)(ipaddr_t, port_t));
     void (*delete)       (Server** sv);
-    __server_t* priv;
+    server_privdata_t* priv;
 };
 
-struct __server_t {
+struct server_privdata_t {
     ipaddr_t addr;
     port_t   port;
     void (*handler)(ServerReq*, ServerRes*);
 };
 
-void __server_init();
+void server_init();
 
 Server* Server_new();
 

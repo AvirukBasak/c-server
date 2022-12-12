@@ -15,11 +15,11 @@ ServerReq* ServerReq_new(
     ipaddr_t addr       // client ip address
 ) {
     ServerReq* req = malloc(sizeof(ServerReq));
-    if (!req) __server_print_err("null pointer", E_NULLPTR);
+    if (!req) server_print_err("null pointer", E_NULLPTR);
     req->delete = ServerReq_delete;
     req->data = data;
     req->size = size;
-    __server_socket_try(clientfd, "client socket fd invalid");
+    server_socket_try(clientfd, "client socket fd invalid");
     req->clientfd = clientfd;
     req->addr[0] = addr[0];
     req->addr[1] = addr[1];

@@ -5,14 +5,14 @@
 #include "socketio.h"
 #include "stdfunc.h"
 
-void __server_sockwrite_str(sockfd_t sockfd, const char* s)
+void server_sockwrite_str(sockfd_t sockfd, const char* s)
 {
     if (!s) return;
     size_t len = strlen(s);
     send(sockfd, s, len, 0);
 }
 
-void __server_sockwrite_ui64(sockfd_t sockfd, const uint64_t n)
+void server_sockwrite_ui64(sockfd_t sockfd, const uint64_t n)
 {
     uint64_t nb = n;
     char s[21];
@@ -24,29 +24,29 @@ void __server_sockwrite_ui64(sockfd_t sockfd, const uint64_t n)
         nb /= 10;
     }
     if (i < 19) i++;
-    __server_sockwrite_str(sockfd, &s[i]);
+    server_sockwrite_str(sockfd, &s[i]);
 }
 
-void __server_sockwrite_i64(sockfd_t sockfd, const int64_t n)
+void server_sockwrite_i64(sockfd_t sockfd, const int64_t n)
 {
     uint64_t nb = n < 0 ? -n : n;
-    if (n < 0) __server_sockwrite_str(sockfd, "-");
-    __server_sockwrite_ui64(sockfd, nb);
+    if (n < 0) server_sockwrite_str(sockfd, "-");
+    server_sockwrite_ui64(sockfd, nb);
 }
 
-void __server_sockwrite_ptr(sockfd_t sockfd, const void* p)
+void server_sockwrite_ptr(sockfd_t sockfd, const void* p)
 {
     char* b = (char*)(&p);
     char s[16];
     size_t len = 0;
     // most significant byte
     bool msbyte_zero = true;
-    bool is_liend = __server_std_is_litle_endian();
+    bool is_liend = server_std_is_litle_endian();
     int i = is_liend ? 7 : 0;
     for (int j = 0; (is_liend ? (i >= 0) : (i < 8)) && j < 16;) {
         const uint8_t byte = b[i];
-        char halfbyte0 = __server_std_to_hex(byte >> 4);
-        char halfbyte1 = __server_std_to_hex(byte);
+        char halfbyte0 = server_std_to_hex(byte >> 4);
+        char halfbyte1 = server_std_to_hex(byte);
         if (halfbyte0 != '0' || halfbyte1 != '0')
             msbyte_zero = false;
         if (!msbyte_zero) {

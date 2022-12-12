@@ -3,9 +3,9 @@
 
 #include <unistd.h>    // signal, SIG*, sig_atomic_t
 
-extern volatile sig_atomic_t __sigint_stop;
+extern volatile sig_atomic_t sigint_stop;
 
-void __server_sigint_handler(int signum);
-void __server_sigpipe_handler(int signum);
+void server_sigint_handler(int signum);
+void server_sigpipe_handler(int signum);
 
 #endif

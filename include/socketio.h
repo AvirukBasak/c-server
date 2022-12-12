@@ -5,9 +5,9 @@
 
 #include "types.h"
 
-void __server_sockwrite_str(sockfd_t sockfd, const char* s);
-void __server_sockwrite_ui64(sockfd_t sockfd, const uint64_t n);
-void __server_sockwrite_i64(sockfd_t sockfd, const int64_t n);
-void __server_sockwrite_ptr(sockfd_t sockfd, const void* p);
+void server_sockwrite_str(sockfd_t sockfd, const char* s);
+void server_sockwrite_ui64(sockfd_t sockfd, const uint64_t n);
+void server_sockwrite_i64(sockfd_t sockfd, const int64_t n);
+void server_sockwrite_ptr(sockfd_t sockfd, const void* p);
 
 #endif

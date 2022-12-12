@@ -5,17 +5,17 @@
 
 #include "sighandlers.h"
 
-volatile sig_atomic_t __sigint_stop;
+volatile sig_atomic_t sigint_stop;
 
-void __server_sigint_handler(int signum)
+void server_sigint_handler(int signum)
 {
     if (signum != SIGINT) return;
     printf("\r\n");
-    __sigint_stop = true;
+    sigint_stop = true;
     exit(0);
 }
 
-void __server_sigpipe_handler(int signum)
+void server_sigpipe_handler(int signum)
 {
     if (signum != SIGPIPE) return;
 #ifdef DEBUG

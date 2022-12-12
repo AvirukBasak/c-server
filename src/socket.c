@@ -12,16 +12,16 @@
 #include "server.h"
 #include "socket.h"
 
-int __server_socket_try(int retval, const char* msg) {
+int server_socket_try(int retval, const char* msg) {
     if (retval <= -1
         || retval == STDOUT_FILENO
         || retval == STDERR_FILENO)
-            __server_print_err(msg, E_ERRNO);
+            server_print_err(msg, E_ERRNO);
     return retval;
 }
 
-sockfd_t __server_socket_listen(ipaddr_t addr, port_t port) {
-    sockfd_t hostfd = __server_socket_try(
+sockfd_t server_socket_listen(ipaddr_t addr, port_t port) {
+    sockfd_t hostfd = server_socket_try(
         socket(AF_INET, SOCK_STREAM , 0),
         "socket creation failed"
     );
@@ -33,18 +33,18 @@ sockfd_t __server_socket_listen(ipaddr_t addr, port_t port) {
     hostaddr.sin_family = AF_INET;
     hostaddr.sin_addr.s_addr = *(uint32_t*) addr;
     hostaddr.sin_port = htons(port);
-    __server_socket_try(
+    server_socket_try(
         bind(hostfd, (sockaddr_t*) &hostaddr, sizeof(hostaddr)),
         "socket bind failed"
     );
-    __server_socket_try(
+    server_socket_try(
         listen(hostfd, SOCK_BACKLOG),
         "socket listen failed"
     );
     return hostfd;
 }
 
-bool __server_socket_endreq(const char* data, size_t sz)
+bool server_socket_endreq(const char* data, size_t sz)
 {
     if (data[sz -1] == 0) return true;                            // null
     if ((signed char) data[sz -1] == EOF) return true;            // end of file
@@ -54,12 +54,12 @@ bool __server_socket_endreq(const char* data, size_t sz)
     return false;
 }
 
-ServerReq* __server_socket_accept(sockfd_t hostfd)
+ServerReq* server_socket_accept(sockfd_t hostfd)
 {
-    __server_socket_try(hostfd, "host socket fd invalid");
+    server_socket_try(hostfd, "host socket fd invalid");
     sockaddrin_t clientaddr;
     socklen_t len = sizeof(clientaddr);
-    sockfd_t clientfd = __server_socket_try(
+    sockfd_t clientfd = server_socket_try(
         accept(hostfd, (sockaddr_t*) &clientaddr, &len),
         "socket accept failed"
     );
@@ -72,27 +72,27 @@ ServerReq* __server_socket_accept(sockfd_t hostfd)
     char* data = NULL;
     size_t data_sz = 0;
     bool endreq = false;
-    char* __socket_buffer = malloc(SOCK_RECVLEN +1);
+    char* socket_buffer = malloc(SOCK_RECVLEN +1);
     do {
-        size_t sz = recv(clientfd, __socket_buffer, SOCK_RECVLEN, 0);
-        __socket_buffer[sz] = 0;
+        size_t sz = recv(clientfd, socket_buffer, SOCK_RECVLEN, 0);
+        socket_buffer[sz] = 0;
         // connection closed, signalled by 0 clientfd
         if (!sz) {
-            free(__socket_buffer);
+            free(socket_buffer);
             return ServerReq_new(data, data_sz, 0, addr);
         }
-        endreq = __server_socket_endreq(__socket_buffer, sz);
+        endreq = server_socket_endreq(socket_buffer, sz);
         data = realloc(data, data_sz +sz +1);
-        memcpy(&data[data_sz], __socket_buffer, sz);
+        memcpy(&data[data_sz], socket_buffer, sz);
         data_sz += sz;
         data[data_sz] = 0;
     } while(!endreq);
-    free(__socket_buffer);
+    free(socket_buffer);
     return ServerReq_new(data, data_sz, clientfd, addr);
 }
 
-void __server_socket_close(sockfd_t sockfd)
+void server_socket_close(sockfd_t sockfd)
 {
-    __server_socket_try(sockfd, "socket fd invalid");
+    server_socket_try(sockfd, "socket fd invalid");
     close(sockfd);
 }
