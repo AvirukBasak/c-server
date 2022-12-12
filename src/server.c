@@ -73,7 +73,7 @@ void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
     );
     free((void*) datetime);
     if (callback) callback(sv->priv->addr, sv->priv->port);
-    while (true) {
+    while (!__sigint_stop) {
         ServerReq* req = __server_socket_accept(hostfd);
         // log request reciept
         if (req->size) {
