@@ -13,10 +13,10 @@
  * Do note that as long as members are ordered properly wrt their types,
  * it doesn't matter if member different names are used in libserver.h.
  *
- * For example `struct Server::__` in libserver.h is actually implemented
+ * For example `struct Server::_` in libserver.h is actually implemented
  * as`struct Server::priv` in server.h.
  *
- * As a convention, `__` indicates private members. They are generally auto
+ * As a convention, `const void* _` indicates private members. They are auto
  * managed. Modifying them may lead to undefined behaviour.
  */
 
@@ -48,11 +48,6 @@ typedef int sockfd_t;
  * @brief Server struct type
  */
 typedef struct Server Server;
-
-/**
- * @brief Private members of Server
- */
-typedef struct __server_t __server_t;
 
 /**
  * @brief Server request struct type
@@ -104,10 +99,10 @@ struct Server {
      */
     void (*delete)(Server** sv);
     /**
-     * @brief Server data
+     * @brief Private server data
      * Auto managed. DO NOT modify.
      */
-    __server_t* __;
+    const void* _;
 };
 
 /**
