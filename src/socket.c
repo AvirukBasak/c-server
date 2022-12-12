@@ -63,7 +63,7 @@ ServerReq* __server_socket_accept(sockfd_t hostfd)
         char buffer[SOCK_RECVLEN +1];
         size_t sz = recv(clientfd, buffer, SOCK_RECVLEN, 0);
         buffer[sz] = 0;
-        if (!sz) break;
+        if (!sz) return ServerReq_new(NULL, 0, clientfd, addr);        // connection closed, drop data
         if (sz == 1 && buffer[0] == 0) endreq = true;                  // null
         if (sz == 1 && buffer[0] == '\n') endreq = true;               // new line
         if (sz == 2 && !strcmp("\r\n", buffer)) endreq = true;         // http request end

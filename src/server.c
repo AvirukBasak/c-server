@@ -76,6 +76,17 @@ void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
     while (true) {
         const char* time = NULL;
         ServerReq* req = __server_socket_accept(hostfd);
+        // connection closed by client, drop request
+        if (!req->data) {
+            const char* time = NULL;
+            printf("[%s] - %d.%d.%d.%d client closed connection\n",
+                time = __server_std_gettime(),
+                req->addr[0], req->addr[1], req->addr[2], req->addr[3]
+            );
+            free((void*) time);
+            free(req);
+            continue;
+        }
         printf("[%s] - %d.%d.%d.%d \"%.*s...\"\n",
             time = __server_std_gettime(),
             req->addr[0], req->addr[1], req->addr[2], req->addr[3],
