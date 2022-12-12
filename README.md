@@ -133,6 +133,8 @@ Sets host port
 - param: `sv` Pointer to Server struct.
 - param: `port`.
 
+Note that a new server instance has a default port of `8080`.
+
 #### Server::listen()
 ```c
 void (*listen)(Server* sv, void (*callback)(ipaddr_t, port_t));
@@ -170,7 +172,7 @@ char* data;
 ```
 Data recieved from client.
 
-**NOTE** that data will be `NULL` terminated.
+**Note** that data will be `NULL` terminated.
 
 #### ServerReq::size
 ```c
