@@ -1,6 +1,5 @@
 #include <stdlib.h>    // malloc
 #include <stdbool.h>   // bool
-#include <unistd.h>    // signal, SIG*
 
 #include "types.h"
 #include "errcodes.h"
@@ -10,17 +9,12 @@
 #include "request.h"
 #include "response.h"
 #include "stdfunc.h"
-
-void __server_sigint_handler(int signum)
-{
-    if (signum != SIGINT) return;
-    printf("\r\n");
-    exit(0);
-}
+#include "sighandlers.h"
 
 void __server_init()
 {
     signal(SIGINT, __server_sigint_handler);
+    signal(SIGPIPE, __server_sigpipe_handler);
 }
 
 Server* Server_new()
