@@ -41,9 +41,9 @@ void __server_sockwrite_ptr(sockfd_t sockfd, const void* p)
     size_t len = 0;
     // most significant byte
     bool msbyte_zero = true;
-    bool is_bend = __server_std_is_litle_endian();
-    int i = is_bend ? 7 : 0;
-    for (int j = 0; (is_bend ? (i >= 0) : (i < 8)) && j < 16;) {
+    bool is_liend = __server_std_is_litle_endian();
+    int i = is_liend ? 7 : 0;
+    for (int j = 0; (is_liend ? (i >= 0) : (i < 8)) && j < 16;) {
         const uint8_t byte = b[i];
         char halfbyte0 = __server_std_to_hex(byte >> 4);
         char halfbyte1 = __server_std_to_hex(byte);
@@ -55,7 +55,7 @@ void __server_sockwrite_ptr(sockfd_t sockfd, const void* p)
             j+=2;
             len++;
         }
-        is_bend ? i-- : i++;
+        is_liend ? i-- : i++;
     }
     send(sockfd, "0x", 2, 0);
     if (len < 1) send(sockfd, "00", 2, 0);

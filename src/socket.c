@@ -1,7 +1,8 @@
+#include <stdio.h>      // fprintf
 #include <string.h>     // memset, strncmp
 #include <stdlib.h>     // realloc
 #include <inttypes.h>   // uint32_t
-#include <unistd.h>     // close
+#include <unistd.h>     // close, signal, SIG*
 #include <stdbool.h>    // bool
 
 #include "types.h"
@@ -19,7 +20,16 @@ int __server_socket_try(int retval, const char* msg) {
     return retval;
 }
 
+void __server_socket_sigpipe_handler(int signum) {
+#ifdef DEBUG
+    fprintf(stderr, "Received SIGPIPE\n");
+#else
+    return;
+#endif
+}
+
 sockfd_t __server_socket_listen(ipaddr_t addr, port_t port) {
+    signal(SIGPIPE, __server_socket_sigpipe_handler);
     sockfd_t hostfd = __server_socket_try(
         socket(AF_INET, SOCK_STREAM , 0),
         "socket creation failed"

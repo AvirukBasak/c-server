@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     Server* sv = Server_new();
     sv->set_handler(sv, conn_handler);
     sv->set_ipaddr(sv, 0, 0, 0, 0);
-    sv->set_port(sv, 42069);
+    sv->set_port(sv, 8080);
     sv->listen(sv, start);
     return 0;
 }

@@ -1,4 +1,5 @@
 #include <stdlib.h>    // abort
+#include <time.h>      // time_t, struct tm, time, localtime
 
 #include "stdfunc.h"
 
@@ -14,4 +15,21 @@ char __server_std_to_hex(const uint8_t _4bits)
     if (bits4 >= 0x00 && bits4 <= 0x09) return bits4 + '0';
     else if (bits4 >= 0x0a && bits4 <= 0x0f) return bits4 - 0x0a + 'a';
     else abort();
+}
+
+const char* __server_std_gettime()
+{
+    const char* months[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+    char* nowtime_utc = malloc(strlen("DD/MM/YYYY:HH:MM:SS +UTC") +1);
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    sprintf(nowtime_utc, "%02d/%s/%04d:%02d:%02d:%02d +UTC",
+        tm.tm_mday,
+        months[tm.tm_mon],
+        tm.tm_year +1900,
+        tm.tm_hour,
+        tm.tm_min,
+        tm.tm_sec
+    );
+    return nowtime_utc;
 }

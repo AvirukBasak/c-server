@@ -6,5 +6,6 @@
 
 bool __server_std_is_litle_endian();
 char __server_std_to_hex(const uint8_t _4bits);
+const char* __server_std_gettime();
 
 #endif
