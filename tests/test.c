@@ -2,6 +2,12 @@
 
 #include "libserver.h"
 
+/**
+ * @brief Handles connection.
+ * Echoes entire request w/ headers and all back to the client.
+ * @param req Server request.
+ * @param res Server response.
+ */
 void conn_handler(ServerReq* req, ServerRes* res) {
     res->writeStr(res, "HTTP/1.1 OK\r\n\r\n");
     res->writeStr(res,
