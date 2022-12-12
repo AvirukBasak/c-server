@@ -19,27 +19,27 @@ Struct types:
 
 Struct `Server`:
 - [`Server_new()`](#server_new)
-- [`Server::set_handler()`](#server-set_handler)
-- [`Server::set_ipaddr()`](#server-set_ipaddr)
-- [`Server::set_port()`](#server-set_port)
-- [`Server::listen()`](#server-listen)
-- [`Server::delete()`](#server-delete)
+- [`Server::set_handler()`](#serverset_handler)
+- [`Server::set_ipaddr()`](#serverset_ipaddr)
+- [`Server::set_port()`](#serverset_port)
+- [`Server::listen()`](#serverlisten)
+- [`Server::delete()`](#serverdelete)
 
 Struct `ServerReq`:
-- [`ServerReq::data`](#serverreq-data)
-- [`ServerReq::size`](#serverreq-size)
-- [`ServerReq::addr`](#serverreq-addr)
-- [`ServerReq::clientfd`](#serverreq-clientfd)
+- [`ServerReq::data`](#serverreqdata)
+- [`ServerReq::size`](#serverreqsize)
+- [`ServerReq::addr`](#serverreqaddr)
+- [`ServerReq::clientfd`](#serverreqclientfd)
 
 Struct `ServerRes`:
-- [`ServerRes::clientfd`](#serverres-clientfd)
-- [`ServerRes::writeBytes()`](#serverres-writeBytes)
-- [`ServerRes::writeStr()`](#serverres-writestr)
-- [`ServerRes::writeU64()`](#serverres-writeu64)
-- [`ServerRes::writeI64()`](#serverres-writei64)
-- [`ServerRes::writeHex()`](#serverres-writehex)
-- [`ServerRes::end()`](#serverres-end)
-- [`ServerRes::delete()`](#serverres-delete)
+- [`ServerRes::clientfd`](#serverresclientfd)
+- [`ServerRes::writeBytes()`](#serverreswriteBytes)
+- [`ServerRes::writeStr()`](#serverreswritestr)
+- [`ServerRes::writeU64()`](#serverreswriteu64)
+- [`ServerRes::writeI64()`](#serverreswritei64)
+- [`ServerRes::writeHex()`](#serverreswritehex)
+- [`ServerRes::end()`](#serverresend)
+- [`ServerRes::delete()`](#serverresdelete)
 
 ## API Description
 
