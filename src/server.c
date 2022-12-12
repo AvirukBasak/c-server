@@ -56,14 +56,15 @@ void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
     sockfd_t hostfd = __server_socket_listen(sv->priv->addr, sv->priv->port);
     if (callback) callback(sv->priv->addr, sv->priv->port);
     while (true) {
+        const char* time = NULL;
         ServerReq* req = __server_socket_accept(hostfd);
-        const char* time = __server_std_gettime();
-        printf("  %d.%d.%d.%d - - [%s] \"%0.32s...\"\n",
+        printf("%d.%d.%d.%d - - [%s] \"%.*s...\"\n",
             req->addr[0], req->addr[1], req->addr[2], req->addr[3],
-            time,
+            time = __server_std_gettime(),
+            __server_std_get_sub_reqdata_end(req->data),
             req->data
         );
-        free(time);
+        free((void*) time);
         ServerRes* res = ServerRes_new(req->clientfd);
         sv->priv->handler(req, res);
         req->delete(&req);

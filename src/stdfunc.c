@@ -33,3 +33,13 @@ const char* __server_std_gettime()
     );
     return nowtime_utc;
 }
+
+int __server_std_get_sub_reqdata_end(const char* reqdata)
+{
+    return (int) MIN(                          // get min of the following three positions
+        MIN(
+            32,                                // max 32, position of 32nd char
+            strchr(reqdata, '\n') - reqdata    // position of \n in request
+        ), strchr(reqdata, '\r') - reqdata     // position of \r in request
+    );
+}
