@@ -17,7 +17,7 @@ LIB_NAME    := server
 
 CC          := gcc
 CFLAGS      := -Wall -Ofast
-CDBGFLAGS   := -Wall -g -D DEBUG
+CDBGFLAGS   := -Wall -g -fsanitize=address -D DEBUG
 DBG         := gdb -q
 
 INCLUDE     := -I $(INCLUDE_DIR) -I $(LIB_DIR)
@@ -76,9 +76,16 @@ test: rel $(TESTSRC)
 	@$(CC) $(CFLAGS) -I $(TARGET_DIR) $(TEST_DIR)/test.$(SRCEXT) -o $(TEST_DIR)/test-rel.out -L$(TARGET_DIR) -l$(LIB_NAME) $(LIB)
 	./$(TEST_DIR)/test-rel.out
 
-testdbg: dbg $(TESTSRC)
-	@$(CC) $(CDBGFLAGS) -I $(TARGET_DIR) $(DBG_OBJECTS) $(TEST_DIR)/test.$(SRCEXT) -o $(TEST_DIR)/test-dbg.out $(LIB)
+# test in debug mode in gdb
+testdbg: testdbg-build
 	$(DBG) $(TEST_DIR)/test-dbg.out
+
+# find memory leaks w/ -fsanitize
+testmleak: testdbg-build
+	@ASAN_OPTIONS=detect_leaks=1 ./$(TEST_DIR)/test-dbg.out
+
+testdbg-build: dbg $(TESTSRC)
+	@$(CC) $(CDBGFLAGS) -I $(TARGET_DIR) $(DBG_OBJECTS) $(TEST_DIR)/test.$(SRCEXT) -o $(TEST_DIR)/test-dbg.out $(LIB)
 
 ## mkdirp
 

@@ -17,7 +17,7 @@ LIB_NAME    := server
 
 CC          := gcc
 CFLAGS      := -Wall -Ofast
-CDBGFLAGS   := -Wall -g -D DEBUG
+CDBGFLAGS   := -Wall -g -fsanitize=address -D DEBUG
 DBG         := gdb -q
 
 INCLUDE     := -I $(INCLUDE_DIR) -I $(LIB_DIR)
