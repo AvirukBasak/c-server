@@ -32,7 +32,7 @@ Server* Server_new();
 void Server_set_handler   (Server* sv, void (*handler)(ServerReq*, ServerRes*));
 void Server_set_ipaddr    (Server* sv, uint8_t a0, uint8_t a1, uint8_t a2, uint8_t a3);
 void Server_set_port      (Server* sv, port_t port);
-void Server_delete        (Server** sv);
 void Server_listen        (Server* sv, void (*callback)(ipaddr_t, port_t));
+void Server_delete        (Server** sv);
 
 #endif
