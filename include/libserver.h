@@ -87,7 +87,7 @@ struct Server {
      */
     void (*listen)(Server* sv, void (*callback)(ipaddr_t, port_t));
     /**
-     * @brief Reallocates server resources
+     * @brief Deletes server resources
      * @param sv Double pointer to Server
      */
     void (*delete)(Server** sv);
