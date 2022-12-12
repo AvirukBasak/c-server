@@ -72,8 +72,8 @@ ServerReq* __server_socket_accept(sockfd_t hostfd)
     char* data = NULL;
     size_t data_sz = 0;
     bool endreq = false;
+    char* __socket_buffer = malloc(SOCK_RECVLEN +1);
     do {
-        char* __socket_buffer = malloc(SOCK_RECVLEN +1);
         size_t sz = recv(clientfd, __socket_buffer, SOCK_RECVLEN, 0);
         __socket_buffer[sz] = 0;
         // connection closed, signalled by 0 clientfd
@@ -84,10 +84,10 @@ ServerReq* __server_socket_accept(sockfd_t hostfd)
         endreq = __server_socket_endreq(__socket_buffer, sz);
         data = realloc(data, data_sz +sz +1);
         memcpy(&data[data_sz], __socket_buffer, sz);
-        free(__socket_buffer);
         data_sz += sz;
         data[data_sz] = 0;
     } while(!endreq);
+    free(__socket_buffer);
     return ServerReq_new(data, data_sz, clientfd, addr);
 }
 
