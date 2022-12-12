@@ -76,14 +76,14 @@ struct Server {
     void (*set_port)    (Server* sv, port_t port);
     void (*listen)      (Server* sv, void (*callback)(ipaddr_t, port_t));
     void (*delete)      (Server** sv);
-    const void* _;
+    void* _;
 };
 ```
 Server struct type.
 
-The `const void* _` encapsulates private data members of the `Server` type.
+The `void* _` encapsulates private data members of the `Server` type.
 
-As a convention, `const void* _` indicates private members.
+As a convention, `void* _` indicates private members.
 They are auto managed. Modifying them may lead to undefined behaviour.
 
 Note that server functions are called wrt a server instance. Example:

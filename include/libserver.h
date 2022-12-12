@@ -16,7 +16,7 @@
  * For example `struct Server::_` in libserver.h is actually implemented
  * as`struct Server::priv` in server.h.
  *
- * As a convention, `const void* _` indicates private members. They are auto
+ * As a convention, `void* _;` indicates private members. They are auto
  * managed. Modifying them may lead to undefined behaviour.
  */
 
@@ -102,7 +102,7 @@ struct Server {
      * @brief Private server data
      * Auto managed. DO NOT modify.
      */
-    const void* _;
+    void* _;
 };
 
 /**
