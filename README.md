@@ -40,9 +40,11 @@ Struct `ServerRes`:
 - [`ServerRes::writeI64()`](#serverreswritei64)
 - [`ServerRes::writeHex()`](#serverreswritehex)
 - [`ServerRes::end()`](#serverresend)
-- [`ServerRes::delete()`](#serverresdelete)
 
-## API Description
+Other functions:
+- [`server_gettime()`](#server_gettime)
+
+### Types
 
 #### ipaddr_t
 ```c
@@ -61,9 +63,9 @@ Datatype for port.
 typedef int sockfd_t;
 ```
 Datatype for socket file descriptor.
-You'll rarely need to directly use a socket file descriptor.
+You'll hardly ever need to directly use a socket file descriptor.
 
-#### Server
+### Server
 ```c
 typedef struct Server Server;
 
@@ -106,7 +108,7 @@ Sets handler callback. The callback is called when a request is received.
 ```c
 void (*set_ipaddr)(Server* sv, uint8_t a0, uint8_t a1, uint8_t a2, uint8_t a3);
 ```
-Sets host address. Example:
+Sets host IPv4 address. Example:
 ```c
 sv->set_addr(sv, 127, 0, 0, 1);
 ```
@@ -115,6 +117,8 @@ sv->set_addr(sv, 127, 0, 0, 1);
 - param: `a1`.
 - param: `a2`.
 - param: `a3`.
+
+Note that a new server instance has a default IPv4 address of `127.0.0.1`.
 
 #### Server::set_port()
 ```c
@@ -141,17 +145,78 @@ void (*delete)(Server** sv);
 Deletes server resources.
 - param: `sv` Double pointer to Server.
 
-#### ServerReq
+### ServerReq
+```c
+typedef struct ServerReq ServerReq;
+
+struct ServerReq {
+    char* data;
+    size_t size;
+    sockfd_t clientfd;
+    void (*delete)(ServerReq** req);
+};
+```
+
+Server request struct type.
 
 #### ServerReq::data
+```c
+char* data;
+```
+Data recieved from client.
+
+**NOTE** that data will be `NULL` terminated.
 
 #### ServerReq::size
+```c
+size_t size;
+```
+Size of data received from client.
 
 #### ServerReq::addr
+```c
+ipaddr_t addr;
+```
+Client IPv4 address.
+- type: `ipaddr_t` aka `uint8_t[4]`.
 
 #### ServerReq::clientfd
+```c
+sockfd_t clientfd;
+```
+Client socket file descriptor.
+- type: `sockfd_t` aka `int`.
 
-#### ServerRes
+#### SeverReq::delete()
+```c
+void (*delete)(ServerReq** req);
+```
+Deletes ServerReq instance and free resources.
+Note that you don't need to call delete manually as it is automatically called after a response is sent.
+- param: `req` Double pointer to request instance. Sets instance to `NULL`.
+
+### ServerRes
+```c
+typedef struct ServerRes ServerRes;
+
+struct ServerRes {
+    sockfd_t clientfd;
+    void (*writeBytes) (ServerRes* res, const char* data, size_t size);
+    void (*writeStr)   (ServerRes* res, const char* str);
+    void (*writeU64)   (ServerRes* res, uint64_t n);
+    void (*writeI64)   (ServerRes* res, int64_t n);
+    void (*writeHex)   (ServerRes* res, uint64_t n);
+    void (*end)        (ServerRes* res);
+};
+```
+Server response struct type.
+
+Note that server response functions are called wrt a server response instance. Example:
+```c
+// ServerRes* res;
+res->writeStr(res, "Hello, World!\n");
+res->end(res);
+```
 
 #### ServerRes::clientfd
 
@@ -168,3 +233,18 @@ Deletes server resources.
 #### ServerRes::end()
 
 #### ServerRes::delete()
+```c
+void (*delete)(ServerRes** res);
+```
+Deletes ServerRes instance and free resources.
+Note that you don't need to call delete manually as it is automatically called after a response is sent.
+- param: `res` Double pointer to response instance. Sets instance to `NULL`.
+
+### Other Functions
+
+#### server_gettime()
+```c
+const char* server_gettime();
+```
+Gets current date and time. Useful for logs.
+- return: `char*` Remember to free it.

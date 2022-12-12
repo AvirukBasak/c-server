@@ -28,8 +28,20 @@
 
 // from types.h: type definitions
 
+/**
+ * @brief Datatype for IPv4 address
+ */
 typedef uint8_t ipaddr_t[4];
+
+/**
+ * @brief Datatype for port
+ */
 typedef uint16_t port_t;
+
+/**
+ * @brief Datatype for socket file descriptor.
+ * You'll hardly ever need to directly use a socket file descriptor.
+ */
 typedef int sockfd_t;
 
 /**
@@ -65,7 +77,7 @@ struct Server {
      */
     void (*set_handler)(Server* sv, void (*handler)(ServerReq*, ServerRes*));
     /**
-     * @brief Sets host address. Example sv->set_addr(sv, 127, 0, 0, 1);
+     * @brief Sets host IPv4 address. Example sv->set_addr(sv, 127, 0, 0, 1);
      * @param sv Pointer to Server struct
      * @param a0
      * @param a1
@@ -88,7 +100,7 @@ struct Server {
     void (*listen)(Server* sv, void (*callback)(ipaddr_t, port_t));
     /**
      * @brief Deletes server resources
-     * @param sv Double pointer to Server
+     * @param sv Double pointer to Server instance. Sets instance to `NULL`.
      */
     void (*delete)(Server** sv);
     /**
@@ -111,7 +123,8 @@ Server* Server_new();
  */
 struct ServerReq {
     /**
-     * @brief Data recieved from client
+     * @brief Data recieved from client.
+     * NOTE that this data will be NULL terminated.
      */
     char* data;
     /**
@@ -129,8 +142,9 @@ struct ServerReq {
      */
     sockfd_t clientfd;
     /**
-     * @brief Deletes ServerReq instance and free resources
-     * @param req Double pointer to request instance
+     * @brief Deletes ServerReq instance and free resources.
+     * Note that you don't need to call delete manually as it is automatically called after a response is sent.
+     * @param req Double pointer to request instance. Sets instance to `NULL`.
      */
     void (*delete)(ServerReq** req);
 };
@@ -183,8 +197,9 @@ struct ServerRes {
      */
     void (*end)(ServerRes* res);
     /**
-     * @brief Deletes ServerRes instance and free resources
-     * @param res Double pointer to response instance
+     * @brief Deletes ServerRes instance and free resources.
+     * Note that you don't need to call delete manually as it is automatically called after a response is sent.
+     * @param res Double pointer to response instance. Sets instance to `NULL`.
      */
     void (*delete)(ServerRes** res);
 };
