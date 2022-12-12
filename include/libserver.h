@@ -1,21 +1,62 @@
+/*
+ * This file selectively exposes certain features of libserver,
+ * thus acting as a layer of abstraction. As a result, this file
+ * needs to be updated everytime API changes are made.
+ *
+ * WARNING: `struct` definitions MUST have members ordered in the
+ * exact order in which they're ordered outside libserver.h.
+ *
+ * For example: `struct Server` in libserver.h has exact ordering of
+ * members as in the actual implementation of `struct Server` defined
+ * in server.h.
+ *
+ * Do note that as long as members are ordered properly wrt their types,
+ * it doesn't matter if member different names are used in libserver.h.
+ *
+ * For example `struct Server::__` in libserver.h is actually implemented
+ * as`struct Server::priv` in server.h.
+ *
+ * As a convention, `__` indicates private members. They are generally auto
+ * managed. Modifying them may lead to undefined behaviour.
+ */
+
 #ifndef __LIBSERVER_H__
 #define __LIBSERVER_H__
 
 #include <stddef.h>        // size_t
 #include <inttypes.h>      // uint8_t, uint16_t, uint64_t, int64_t
 
+// from types.h: type definitions
+
 typedef uint8_t ipaddr_t[4];
 typedef uint16_t port_t;
 typedef int sockfd_t;
 
+/**
+ * @brief Server struct type
+ */
 typedef struct Server Server;
+
+/**
+ * @brief Private members of Server
+ */
 typedef struct __server_t __server_t;
 
+/**
+ * @brief Server request struct type
+ */
 typedef struct ServerReq ServerReq;
 
+/**
+ * @brief Server response struct type
+ */
 typedef struct ServerRes ServerRes;
-typedef struct __serverres_t __serverres_t;
 
+// from server.h: create a server instance
+
+/**
+ * @brief Server struct type
+ */
 struct Server {
     /**
      * @brief Sets handler callback. The callback is called when a request is received.
@@ -46,37 +87,114 @@ struct Server {
      */
     void (*listen)(Server* sv, void (*callback)(ipaddr_t, port_t));
     /**
-     * @brief Reallocates server resources.
+     * @brief Reallocates server resources
      * @param sv Double pointer to Server
      */
     void (*delete)(Server** sv);
     /**
-     * @brief Server data.
+     * @brief Server data
      * Auto managed. DO NOT modify.
      */
     __server_t* __;
 };
 
-struct ServerReq {
-    char* data;
-    size_t size;
-    ipaddr_t addr;
-    sockfd_t clientfd;
-    void (*delete)(ServerReq** res);
-};
-
-
-struct ServerRes {
-    sockfd_t clientfd;
-    void (*writeBytes) (ServerRes* res, const char* data, size_t size);
-    void (*writeStr)   (ServerRes* res, const char* str);
-    void (*writeU64)   (ServerRes* res, uint64_t n);
-    void (*writeI64)   (ServerRes* res, int64_t n);
-    void (*writeHex)   (ServerRes* res, const void* p);
-    void (*send)       (ServerRes* res);
-    void (*delete)     (ServerRes** res);
-};
-
+/**
+ * @brief Create new server instance
+ * @return Server*
+ */
 Server* Server_new();
+
+// from request.h: read request
+
+/**
+ * @brief Server request struct type
+ */
+struct ServerReq {
+    /**
+     * @brief Data recieved from client
+     */
+    char* data;
+    /**
+     * @brief Size of data received from client
+     */
+    size_t size;
+    /**
+     * @brief Client IPv4 address
+     * @type ipaddr_t aka uint8_t[4]
+     */
+    ipaddr_t addr;
+    /**
+     * @brief Client socket file descriptor
+     * @type sockfd_t aka int
+     */
+    sockfd_t clientfd;
+    /**
+     * @brief Delete ServerReq instance and free resources
+     * @param req Double pointer to request instance
+     */
+    void (*delete)(ServerReq** req);
+};
+
+// from response.h: handle response
+
+/**
+ * @brief Server response struct type
+ */
+struct ServerRes {
+    /**
+     * @brief Client socket file descriptor
+     * @type sockfd_t aka int
+     */
+    sockfd_t clientfd;
+    /**
+     * @brief Write raw bytes to response
+     * @param res Pointer to server response instance
+     * @param data Data to be written
+     * @param size Size of data in bytes
+     */
+    void (*writeBytes)(ServerRes* res, const char* data, size_t size);
+    /**
+     * @brief Write ASCII character string to response
+     * @param res Pointer to server response instance
+     * @param data String to be written
+     */
+    void (*writeStr)(ServerRes* res, const char* str);
+    /**
+     * @brief Write an unsigned number to response
+     * @param res Pointer to server response instance
+     * @param n The number itself
+     */
+    void (*writeU64)(ServerRes* res, uint64_t n);
+    /**
+     * @brief Write a signed number to response
+     * @param res Pointer to server response instance
+     * @param n The number itself
+     */
+    void (*writeI64)(ServerRes* res, int64_t n);
+    /**
+     * @brief Write a number to response in hex representation
+     * @param res Pointer to server response instance
+     * @param n The number itself
+     */
+    void (*writeHex)(ServerRes* res, uint64_t n);
+    /**
+     * @brief Close client socket file descriptor
+     * @param res Pointer to server response instance
+     */
+    void (*send)(ServerRes* res);
+    /**
+     * @brief Delete ServerRes instance and free resources
+     * @param res Double pointer to response instance
+     */
+    void (*delete)(ServerRes** res);
+};
+
+// from apifunc.h: misc api functions
+
+/**
+ * @brief Get current date and time. Useful for logs.
+ * @return char* Remember to free it.
+ */
+const char* server_gettime();
 
 #endif
