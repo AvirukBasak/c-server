@@ -3,5 +3,6 @@
 
 #define E_ERRNO   (0)
 #define E_NULLPTR (1)
+#define E_SOCKFD  (2)
 
 #endif
