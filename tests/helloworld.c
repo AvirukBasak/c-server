@@ -1,9 +1,9 @@
 #include "libserver.h"
 
 /**
- * @brief Handles connection.
- * @param req Server request.
- * @param res Server response.
+ * @brief Handles connection
+ * @param req Server request
+ * @param res Server response
  */
 void conn_handler(ServerReq* req, ServerRes* res);
 
