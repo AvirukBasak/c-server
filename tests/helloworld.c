@@ -2,7 +2,6 @@
 
 /**
  * @brief Handles connection.
- * Echoes entire request w/ headers and all back to the client.
  * @param req Server request.
  * @param res Server response.
  */
