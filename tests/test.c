@@ -5,8 +5,8 @@
 /**
  * @brief Handles connection.
  * Echoes entire request w/ headers and all back to the client.
- * @param req Server request.
- * @param res Server response.
+ * @param req Server request
+ * @param res Server response
  */
 void conn_handler(ServerReq* req, ServerRes* res);
 
