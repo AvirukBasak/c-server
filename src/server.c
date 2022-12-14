@@ -28,7 +28,6 @@ Server* Server_new()
     sv->set_handler = Server_set_handler;
     sv->set_ipaddr = Server_set_ipaddr;
     sv->set_port = Server_set_port;
-    sv->delete = Server_delete;
     sv->listen = Server_listen;
     // init server
     sv->set_ipaddr(sv, 127, 0, 0, 1);
@@ -95,16 +94,16 @@ void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
                 req->addr[0], req->addr[1], req->addr[2], req->addr[3]
             );
             free((void*) datetime);
-            req->delete(&req);
+            ServerReq_delete(&req);
             continue;
         }
         ServerRes* res = ServerRes_new(req->clientfd);
         sv->priv->handler(req, res);
-        req->delete(&req);
-        res->delete(&res);
+        ServerReq_delete(&req);
+        ServerRes_delete(&res);
     }
     server_socket_close(hostfd);
-    sv->delete(&sv);
+    Server_delete(&sv);
 }
 
 void Server_delete(Server** sv)

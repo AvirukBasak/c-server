@@ -19,7 +19,6 @@ ServerRes* ServerRes_new(sockfd_t clientfd)
     res->writeI64 = ServerRes_writeI64;
     res->writeHex = ServerRes_writeHex;
     res->end = ServerRes_end;
-    res->delete = ServerRes_delete;
     return res;
 }
 

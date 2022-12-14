@@ -16,7 +16,6 @@ ServerReq* ServerReq_new(
 ) {
     ServerReq* req = malloc(sizeof(ServerReq));
     if (!req) server_print_err("null pointer", E_NULLPTR);
-    req->delete = ServerReq_delete;
     req->data = data;
     req->size = size;
     server_socket_try(clientfd, "client socket fd invalid");
