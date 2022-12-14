@@ -94,11 +94,6 @@ struct Server {
      */
     void (*listen)(Server* sv, void (*callback)(ipaddr_t, port_t));
     /**
-     * @brief Deletes server instance and frees resources.
-     * @param sv Double pointer to Server instance. Sets instance to `NULL`.
-     */
-    void (*delete)(Server** sv);
-    /**
      * @brief Private server data
      * Auto managed. DO NOT modify.
      */
@@ -110,6 +105,12 @@ struct Server {
  * @return Server*
  */
 Server* Server_new();
+
+/**
+ * @brief Deletes server instance and frees resources.
+ * @param sv Double pointer to Server instance. Sets instance to `NULL`.
+ */
+void Server_delete(Server** sv);
 
 // from request.h: read request
 
@@ -136,12 +137,6 @@ struct ServerReq {
      * @type sockfd_t aka int
      */
     sockfd_t clientfd;
-    /**
-     * @brief Deletes ServerReq instance and frees resources.
-     * Note that you don't need to call delete manually as it is automatically called after a response is sent.
-     * @param req Double pointer to request instance. Sets instance to `NULL`.
-     */
-    void (*delete)(ServerReq** req);
 };
 
 // from response.h: handle response
@@ -191,12 +186,6 @@ struct ServerRes {
      * @param res Pointer to server response instance
      */
     void (*end)(ServerRes* res);
-    /**
-     * @brief Deletes ServerRes instance and frees resources.
-     * Note that you don't need to call delete manually as it is automatically called after a response is sent.
-     * @param res Double pointer to response instance. Sets instance to `NULL`.
-     */
-    void (*delete)(ServerRes** res);
 };
 
 // from apifunc.h: misc api functions

@@ -9,31 +9,40 @@ Simple server library in C.
 - Start demo server with `make test`.
 
 ## API
-Types:
+Do note that `structtype::member` is just a way to document different members of a struct.
+
+This is neither a syntax of C structs nor is this an API for a different programming language.
+
+It is only a conceptual representation.
+
+The difference b/w functions like `StructType_foo` and `StructType::foo` is described more specifically in the [`Server`](#server) section.
+
+#### Types:
 - [`ipaddr_t`](#ipaddr_t)
 - [`port_t`](#port_t)
 - [`sockfd_t`](#sockfd_t)
 
-Struct types:
+#### Struct types
 - [`Server`](#server)
 - [`ServerReq`](#serverreq)
 - [`ServerRes`](#serverres)
 
-Struct `Server`:
+#### Struct Server
 - [`Server_new()`](#server_new)
+- [`Server_delete()`](#server_delete)
 - [`Server::set_handler()`](#serverset_handler)
 - [`Server::set_ipaddr()`](#serverset_ipaddr)
 - [`Server::set_port()`](#serverset_port)
 - [`Server::listen()`](#serverlisten)
-- [`Server::delete()`](#serverdelete)
+- [`handler`](#the-handler-function)
 
-Struct `ServerReq`:
+#### Struct ServerReq
 - [`ServerReq::data`](#serverreqdata)
 - [`ServerReq::size`](#serverreqsize)
 - [`ServerReq::addr`](#serverreqaddr)
 - [`ServerReq::clientfd`](#serverreqclientfd)
 
-Struct `ServerRes`:
+#### Struct ServerRes
 - [`ServerRes::clientfd`](#serverresclientfd)
 - [`ServerRes::writeBytes()`](#serverreswriteBytes)
 - [`ServerRes::writeStr()`](#serverreswritestr)
@@ -42,7 +51,7 @@ Struct `ServerRes`:
 - [`ServerRes::writeHex()`](#serverreswritehex)
 - [`ServerRes::end()`](#serverresend)
 
-Other functions:
+#### Other functions
 - [`server_gettime()`](#server_gettime)
 
 ### Types
@@ -75,7 +84,6 @@ struct Server {
     void (*set_ipaddr)  (Server* sv, uint8_t a0, uint8_t a1, uint8_t a2, uint8_t a3);
     void (*set_port)    (Server* sv, port_t port);
     void (*listen)      (Server* sv, void (*callback)(ipaddr_t, port_t));
-    void (*delete)      (Server** sv);
     void* _;
 };
 ```
@@ -102,6 +110,15 @@ Server* Server_new();
 Create new server instance.
 - return: `Server*` Pointer to new server instance.
 
+Note that it's a good idea to call `Server_delete` once you are done with the instance.
+
+#### Server_delete()
+```c
+void Server_delete(Server** sv);
+```
+Deletes server instance and frees resources.
+- param: `sv` Double pointer to Server. Sets instance to `NULL`.
+
 #### Server::set_handler()
 ```c
 void (*set_handler)(Server* sv, void (*handler)(ServerReq*, ServerRes*));
@@ -109,6 +126,14 @@ void (*set_handler)(Server* sv, void (*handler)(ServerReq*, ServerRes*));
 Sets handler callback. The callback is called when a request is received.
 - param: `sv` Pointer to Server struct.
 - param: `handler` Callback function of prototype `void (ServerReq*, ServerRes*)`.
+
+#### The handler function
+```c
+void handler(ServerReq* req, ServerRes* res);
+```
+Handles the request and response.
+- param: `req` Request instance. Is automatically freed when handler goes out of scope.
+- param: `res` Response instance. Is automatically freed when handler goes out of scope.
 
 #### Server::set_ipaddr()
 ```c
@@ -146,13 +171,6 @@ Force exits threads on `^C`.
 - param: `sv` Pointer to Server struct.
 - param: `callback` Called once after server is started.
 
-#### Server::delete()
-```c
-void (*delete)(Server** sv);
-```
-Deletes server instance and frees resources.
-- param: `sv` Double pointer to Server. Sets instance to `NULL`.
-
 ### ServerReq
 ```c
 typedef struct ServerReq ServerReq;
@@ -161,7 +179,6 @@ struct ServerReq {
     char* data;
     size_t size;
     sockfd_t clientfd;
-    void (*delete)(ServerReq** req);
 };
 ```
 
@@ -195,14 +212,6 @@ sockfd_t clientfd;
 Client socket file descriptor.
 - type: `sockfd_t` aka `int`.
 
-#### SeverReq::delete()
-```c
-void (*delete)(ServerReq** req);
-```
-Deletes ServerReq instance and frees resources.
-Note that you don't need to call delete manually as it is automatically called after a response is sent.
-- param: `req` Double pointer to request instance. Sets instance to `NULL`.
-
 ### ServerRes
 ```c
 typedef struct ServerRes ServerRes;
@@ -215,7 +224,6 @@ struct ServerRes {
     void (*writeI64)   (ServerRes* res, int64_t n);
     void (*writeHex)   (ServerRes* res, uint64_t n);
     void (*end)        (ServerRes* res);
-  ‌‌  void (*delete)     (ServerRes** res);
 };
 ```
 Server response struct type.
@@ -281,14 +289,6 @@ void (*end)(ServerRes* res);
 ```
 Closes client socket file descriptor.
 - param: `res` Pointer to server response instance.
-
-#### ServerRes::delete()
-```c
-void (*delete)(ServerRes** res);
-```
-Deletes ServerRes instance and frees resources.
-Note that you don't need to call delete manually as it is automatically called after a response is sent.
-- param: `res` Double pointer to response instance. Sets instance to `NULL`.
 
 ### Other Functions
 

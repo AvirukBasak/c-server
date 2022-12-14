@@ -14,7 +14,6 @@ struct ServerRes {
     void (*writeI64)   (ServerRes* res, int64_t n);
     void (*writeHex)   (ServerRes* res, uint64_t n);
     void (*end)        (ServerRes* res);
-    void (*delete)     (ServerRes** res);
 };
 
 ServerRes* ServerRes_new(sockfd_t clientfd);

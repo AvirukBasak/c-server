@@ -15,7 +15,6 @@ struct Server {
     void (*set_ipaddr)   (Server* sv, uint8_t a0, uint8_t a1, uint8_t a2, uint8_t a3);
     void (*set_port)     (Server* sv, port_t port);
     void (*listen)       (Server* sv, void (*callback)(ipaddr_t, port_t));
-    void (*delete)       (Server** sv);
     server_privdata_t* priv;
 };
 

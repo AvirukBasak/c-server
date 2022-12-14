@@ -12,7 +12,6 @@ struct ServerReq {
     size_t size;
     ipaddr_t addr;
     sockfd_t clientfd;
-    void (*delete)(ServerReq** res);
 };
 
 ServerReq* ServerReq_new(char *data, size_t size, sockfd_t clientfd, ipaddr_t addr);
