@@ -35,6 +35,14 @@ Server* Server_new()
     return sv;
 }
 
+void Server_delete(Server** sv)
+{
+    if (!sv && !*sv) return;
+    free((*sv)->priv);
+    free(*sv);
+    *sv = NULL;
+}
+
 void Server_set_handler(Server* sv, void (*handler)(ServerReq*, ServerRes*))
 {
     if (!handler) server_print_err("null pointer", E_NULLPTR);
@@ -100,12 +108,4 @@ void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
     }
     server_socket_close(hostfd);
     Server_delete(&sv);
-}
-
-void Server_delete(Server** sv)
-{
-    if (!sv && !*sv) return;
-    free((*sv)->priv);
-    free(*sv);
-    *sv = NULL;
 }
