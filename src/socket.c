@@ -13,10 +13,10 @@
 #include "socket.h"
 
 int server_socket_try(int retval, const char* msg) {
-    if (retval <= -1
-        || retval == STDOUT_FILENO
-        || retval == STDERR_FILENO)
-            server_print_err(msg, E_SOCKFD);
+    if (retval <= -1)
+        server_print_err(msg, E_ERRNO);
+    else if (retval == STDOUT_FILENO || retval == STDERR_FILENO)
+        server_print_err(msg, E_SOCKFD);
     return retval;
 }
 
