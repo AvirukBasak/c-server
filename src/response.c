@@ -1,11 +1,12 @@
-#include <stdlib.h>    // malloc
-#include <unistd.h>    // close
-#include <stdbool.h>   // bool
+#include <stdlib.h>      // malloc
+#include <unistd.h>      // close
+#include <stdbool.h>     // bool
+#include <sys/socket.h>  // send
+#include <stdarg.h>      // va_*
 
 #include "errcodes.h"
 #include "io.h"
 #include "response.h"
-#include "socketio.h"
 
 ServerRes* ServerRes_new(sockfd_t clientfd)
 {
@@ -14,10 +15,7 @@ ServerRes* ServerRes_new(sockfd_t clientfd)
     server_socket_try(clientfd, "client socket fd invalid");
     res->clientfd = clientfd;
     res->writeBytes = ServerRes_writeBytes;
-    res->writeStr = ServerRes_writeStr;
-    res->writeU64 = ServerRes_writeU64;
-    res->writeI64 = ServerRes_writeI64;
-    res->writeHex = ServerRes_writeHex;
+    res->writef = ServerRes_writef;
     res->end = ServerRes_end;
     return res;
 }
@@ -36,31 +34,23 @@ void ServerRes_delete(ServerRes** res)
 void ServerRes_writeBytes(ServerRes* res, const char* data, size_t size)
 {
     server_socket_try(res->clientfd, "client socket fd invalid");
-    write(res->clientfd, data, size);
+    send(res->clientfd, data, size, 0);
 }
 
-void ServerRes_writeStr(ServerRes* res, const char* str)
+void ServerRes_writef(ServerRes* res, const char* fmt, ...)
+// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/va-arg-va-copy-va-end-va-start?view=msvc-170#example
 {
-    server_socket_try(res->clientfd, "client socket fd invalid");
-    server_sockwrite_str(res->clientfd, str);
-}
-
-void ServerRes_writeU64(ServerRes* res, uint64_t n)
-{
-    server_socket_try(res->clientfd, "client socket fd invalid");
-    server_sockwrite_ui64(res->clientfd, n);
-}
-
-void ServerRes_writeI64(ServerRes* res, int64_t n)
-{
-    server_socket_try(res->clientfd, "client socket fd invalid");
-    server_sockwrite_i64(res->clientfd, n);
-}
-
-void ServerRes_writeHex(ServerRes* res, uint64_t n)
-{
-    server_socket_try(res->clientfd, "client socket fd invalid");
-    server_sockwrite_ptr(res->clientfd, (void*) n);
+    va_list args;                                 // original args
+    va_list args_copy;                            // copy of args for 2nd pass
+    va_start(args, fmt);                          // init original args
+    va_copy(args_copy, args);                     // make args copy
+    size_t size = vsnprintf(NULL, 0, fmt, args);  // compute required bytes
+    va_end(args);                                 // end original srgs
+    char* buffer = malloc(size +1);               // allocate required bytes
+    vsnprintf(buffer, size, fmt, args_copy);      // write to buffer from copy
+    va_end(args_copy);                            // end copy
+    send(res->clientfd, buffer, size, 0);         // send off data
+    free(buffer);                                 // free buffer
 }
 
 void ServerRes_end(ServerRes* res)

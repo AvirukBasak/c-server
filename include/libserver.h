@@ -137,6 +137,22 @@ struct ServerReq {
      * @type sockfd_t aka int
      */
     sockfd_t clientfd;
+    /**
+     * @brief Reads raw bytes from request.
+     * Data will be NULL terminated.
+     * @param req Pointer to server request instance
+     * @param size Size of data to be read in bytes
+     * @return char* Remember to free it.
+     */
+    char* (*readBytes)(ServerReq* req, size_t size);
+    /**
+     * @brief Reads a line of string from request.
+     * A line of string is defined as a string ending with LF or CR LF.
+     * Returned string will NOT contain the line endings.
+     * @param req Pointer to server request instance
+     * @return char* Remember to free it.
+     */
+    char* (*readLine)(ServerReq* req);
 };
 
 // from response.h: handle response
@@ -158,29 +174,12 @@ struct ServerRes {
      */
     void (*writeBytes)(ServerRes* res, const char* data, size_t size);
     /**
-     * @brief Writes ASCII character string to response
+     * @brief Writes formatted output to response
      * @param res Pointer to server response instance
-     * @param data String to be written
+     * @param fmt Format string
+     * @param args
      */
-    void (*writeStr)(ServerRes* res, const char* str);
-    /**
-     * @brief Writes an unsigned number to response
-     * @param res Pointer to server response instance
-     * @param n The number itself
-     */
-    void (*writeU64)(ServerRes* res, uint64_t n);
-    /**
-     * @brief Writes a signed number to response
-     * @param res Pointer to server response instance
-     * @param n The number itself
-     */
-    void (*writeI64)(ServerRes* res, int64_t n);
-    /**
-     * @brief Writes a number to response in hex representation
-     * @param res Pointer to server response instance
-     * @param n The number itself
-     */
-    void (*writeHex)(ServerRes* res, uint64_t n);
+    void (*writef)(ServerRes* res, const char* fmt, ...) __attribute__((format(printf, 2, 3)));
     /**
      * @brief Closes client socket file descriptor
      * @param res Pointer to server response instance

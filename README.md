@@ -45,10 +45,7 @@ The difference b/w functions like `StructType_foo` and `StructType::foo` is desc
 #### Struct ServerRes
 - [`ServerRes::clientfd`](#serverresclientfd)
 - [`ServerRes::writeBytes()`](#serverreswriteBytes)
-- [`ServerRes::writeStr()`](#serverreswritestr)
-- [`ServerRes::writeU64()`](#serverreswriteu64)
-- [`ServerRes::writeI64()`](#serverreswritei64)
-- [`ServerRes::writeHex()`](#serverreswritehex)
+- [`ServerRes::writef()`](#serverreswritef)
 - [`ServerRes::end()`](#serverresend)
 
 #### Other functions
@@ -219,10 +216,7 @@ typedef struct ServerRes ServerRes;
 struct ServerRes {
     sockfd_t clientfd;
     void (*writeBytes) (ServerRes* res, const char* data, size_t size);
-    void (*writeStr)   (ServerRes* res, const char* str);
-    void (*writeU64)   (ServerRes* res, uint64_t n);
-    void (*writeI64)   (ServerRes* res, int64_t n);
-    void (*writeHex)   (ServerRes* res, uint64_t n);
+    void (*writef)     (ServerRes* res, const char* fmt, ...);
     void (*end)        (ServerRes* res);
 };
 ```
@@ -247,41 +241,18 @@ Client socket file descriptor.
 void (*writeBytes)(ServerRes* res, const char* data, size_t size);
 ```
 Writes raw bytes to response.
-- param: `res` Pointer to server response instance..
+- param: `res` Pointer to server response instance.
 - param: `data` Data to be written.
 - param: `size` Size of data in bytes.
 
-#### ServerRes::writeStr()
+#### ServerRes::writef()
 ```c
-void (*writeStr)(ServerRes* res, const char* str);
+void (*writef)(ServerRes* res, const char* fmt, ...);
 ```
-Writes ASCII character string to response..
+Writes formatted output to response.
 - param: `res` Pointer to server response instance.
-- param: `data` String to be written.
-
-#### ServerRes::writeU64()
-```c
-void (*writeU64)(ServerRes* res, uint64_t n);
-```
-Writes an unsigned number to response.
-- param: `res` Pointer to server response instance.
-- param: `n` The number itself.
-
-#### ServerRes::writeI64()
-```c
-void (*writeI64)(ServerRes* res, int64_t n);
-```
-Writes a signed number to response.
-- param: `res` Pointer to server response instance.
-- param: `n` The number itself.
-
-#### ServerRes::writeHex()
-```c
-void (*writeHex)(ServerRes* res, uint64_t n);
-```
-Writes a number to response in hex representation.
-- param: `res` Pointer to server response instance.
-- param: `n` The number itself.
+- param: `fmt` Format string.
+- param: `args`
 
 #### ServerRes::end()
 ```c
