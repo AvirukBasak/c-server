@@ -46,8 +46,8 @@ void ServerRes_writef(ServerRes* res, const char* fmt, ...)
     va_copy(args_copy, args);                     // make args copy
     size_t size = vsnprintf(NULL, 0, fmt, args);  // compute required bytes
     va_end(args);                                 // end original srgs
-    char* buffer = malloc(size +1);               // allocate required bytes
-    vsnprintf(buffer, size, fmt, args_copy);      // write to buffer from copy
+    char* buffer = malloc(size +2);               // allocate required bytes
+    vsnprintf(buffer, size +1, fmt, args_copy);   // write to buffer from copy
     va_end(args_copy);                            // end copy
     send(res->clientfd, buffer, size, 0);         // send off data
     free(buffer);                                 // free buffer
