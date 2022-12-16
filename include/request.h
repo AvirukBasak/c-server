@@ -12,9 +12,14 @@ struct ServerReq {
     size_t size;
     ipaddr_t addr;
     sockfd_t clientfd;
+    char* (*readBytes) (ServerReq* req, size_t size);
+    char* (*readLine)  (ServerReq* req);
 };
 
 ServerReq* ServerReq_new(char *data, size_t size, sockfd_t clientfd, ipaddr_t addr);
 void ServerReq_delete(ServerReq** req);
+
+char* ServerReq_readBytes (ServerReq* req, size_t size);
+char* ServerReq_readLine  (ServerReq* req);
 
 #endif

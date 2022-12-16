@@ -24,7 +24,19 @@ ServerReq* ServerReq_new(
     req->addr[1] = addr[1];
     req->addr[2] = addr[2];
     req->addr[3] = addr[3];
+    req->readBytes = ServerReq_readBytes;
+    req->readLine = ServerReq_readLine;
     return req;
+}
+
+char* ServerReq_readBytes(ServerReq* req, size_t size)
+{
+    return NULL;
+}
+
+char* ServerReq_readLine(ServerReq* req)
+{
+    return NULL;
 }
 
 void ServerReq_delete(ServerReq** req)
