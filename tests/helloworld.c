@@ -16,10 +16,10 @@ int main(int argc, char *argv[])
 }
 
 void conn_handler(ServerReq* req, ServerRes* res) {
-    res->writeStr(res, "HTTP/1.1 OK\r\n");
-    res->writeStr(res, "Content-Type: text/plain\r\n");
-    res->writeStr(res, "\r\n");
-    res->writeStr(res, "Hello, World!\r\n");
-    res->writeStr(res, "\r\n");
+    res->writef(res, "HTTP/1.1 OK\r\n");
+    res->writef(res, "Content-Type: text/plain\r\n");
+    res->writef(res, "\r\n");
+    res->writef(res, "Hello, World!\r\n");
+    res->writef(res, "\r\n");
     res->end(res);
 }

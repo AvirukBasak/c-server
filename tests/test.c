@@ -21,11 +21,11 @@ int main(int argc, char *argv[])
 }
 
 void conn_handler(ServerReq* req, ServerRes* res) {
-    res->writeStr(res, "HTTP/1.1 OK\r\n");
-    res->writeStr(res, "Content-Type: text/html\r\n");
-    res->writeStr(res, "Server: tcp-server\r\n");
-    res->writeStr(res, "\r\n");
-    res->writeStr(res,
+    res->writef(res, "HTTP/1.1 OK\r\n");
+    res->writef(res, "Content-Type: text/html\r\n");
+    res->writef(res, "Server: tcp-server\r\n");
+    res->writef(res, "\r\n");
+    res->writef(res,
         "<!DOCTYPE html>\n"
         "<html>\n"
         "<head>\n"
@@ -37,18 +37,18 @@ void conn_handler(ServerReq* req, ServerRes* res) {
         "    <title>Demo Server</title>\n"
         "    <style>\n"
         "        * {\n"
-        "            font-size: 130%;\n"
+        "            font-size: 130%%;\n"
         "            font-family: monospace;\n"
         "        }\n"
         "        body {\n"
         "            margin: 10px;\n"
         "        }\n"
         "        pre {\n"
-        "            width: 100%;\n"
+        "            width: 100%%;\n"
         "            overflow: scroll;\n"
         "        }\n"
         "        h1 {\n"
-        "            font-size: 190%;\n"
+        "            font-size: 190%%;\n"
         "            font-family: monospace;\n"
         "        }\n"
         "    </style>\n"
@@ -58,17 +58,15 @@ void conn_handler(ServerReq* req, ServerRes* res) {
         "    <pre>\n"
     );
     res->writeBytes(res, req->data, req->size);
-    res->writeStr(res, "Server Time: ");
     const char* datetime = server_gettime();
-    res->writeStr(res, datetime);
+    res->writef(res, "Server Time: %s\n", datetime);
     free((void*) datetime);
-    res->writeStr(res, "\n");
-    res->writeStr(res,
+    res->writef(res,
         "    </pre>\n"
         "</body>\n"
         "</html>\n"
         "\r\n"
     );
-    res->writeStr(res, "\r\n");
+    res->writef(res, "\r\n");
     res->end(res);
 }
