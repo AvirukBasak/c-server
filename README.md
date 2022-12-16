@@ -224,8 +224,8 @@ Server response struct type.
 
 Note that server response functions are called wrt a server response instance. Example:
 ```c
-// ServerRes* res;
-res->writeStr(res, "Hello, World!\n");
+char* name = "Joe";
+res->writef(res, "Hello, %s!\n", name);
 res->end(res);
 ```
 
