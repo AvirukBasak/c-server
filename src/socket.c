@@ -48,9 +48,11 @@ bool server_socket_endreq(const char* data, size_t sz)
 {
     if (data[sz -1] == 0) return true;                            // null
     if ((signed char) data[sz -1] == EOF) return true;            // end of file
-    if (data[sz -4] == '\r' && data[sz -3] == '\n'
+    if (sz >= 4
+     && data[sz -4] == '\r' && data[sz -3] == '\n'
      && data[sz -2] == '\r' && data[sz -1] == '\n') return true;  // http request end
-    if (data[sz -2] == '\n' && data[sz -1] == '\n') return true;  // custom request end
+    if (sz >= 2
+     && data[sz -2] == '\n' && data[sz -1] == '\n') return true;  // custom request end
     return false;
 }
 
