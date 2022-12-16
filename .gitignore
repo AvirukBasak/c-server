@@ -5,3 +5,4 @@ target/
 *.a
 *.out
 core
+tests/helloworld
