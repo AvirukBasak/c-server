@@ -119,7 +119,8 @@ void Server_delete(Server** sv);
  */
 struct ServerReq {
     /**
-     * @brief Data recieved from client.
+     * @brief Data read from client.
+     * @deprecated Use either readBytes, readLine or readf.
      * NOTE that this data will be NULL terminated.
      */
     char* data;
@@ -155,8 +156,8 @@ struct ServerReq {
      */
     char* (*readLine)(ServerReq* req);
     /**
-     * @brief Read formatted input from request, much like scanf.
-     * Starts scanning for values after an LF is encountered.
+     * @brief Reads formatted input from request, much like scanf.
+     * Scans for values till an LF is encountered.
      * WARNING: Using readf for strings is as unsafe as scanf. Use readBytes or readLine instead.
      * @param res Pointer to server response instance
      * @param fmt Format string
