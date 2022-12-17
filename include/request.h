@@ -17,7 +17,7 @@ struct ServerReq {
     void  (*readf)     (ServerReq* req, const char* fmt, ...) __attribute__((format(scanf, 2, 3)));
 };
 
-ServerReq* ServerReq_new(char *data, size_t size, sockfd_t clientfd, ipaddr_t addr);
+ServerReq* ServerReq_new(sockfd_t clientfd, ipaddr_t addr);
 void ServerReq_delete(ServerReq** req);
 
 char* ServerReq_readBytes (ServerReq* req, size_t size);
