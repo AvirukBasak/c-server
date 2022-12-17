@@ -179,6 +179,9 @@ struct ServerReq {
     char* data;
     size_t size;
     sockfd_t clientfd;
+    char* (*readBytes) (ServerReq* req, size_t size);
+    char* (*readLine)  (ServerReq* req);
+    bool  (*readf)     (ServerReq* req, const char* fmt, ...);
 };
 ```
 
@@ -215,6 +218,7 @@ Client IPv4 address.
 sockfd_t clientfd;
 ```
 Client socket file descriptor.
+Is set to `0` if connection gets closed.
 - type: `sockfd_t` aka `int`.
 
 #### ServerReq::readBytes()
@@ -226,6 +230,7 @@ Data will be NULL terminated.
 - param: `req` Pointer to server request instance.
 - param: `size` Size of data to be read in bytes.
 - return: `char*` Memory auto managed. DO NOT free the return value.
+- return: `NULL` If connection closed.
 
 **Note** that memory of returned data is auto freed on the next
 call to [`ServerReq::readBytes()`](#serverreqreadbytes),
@@ -246,6 +251,7 @@ Returned string will NOT contain the line endings.
 Size of string is stored in [`ServerReq::size`](#serverreqsize).
 - param: `req` Pointer to server request instance.
 - return: `char*` Memory auto managed. DO NOT free the return value.
+- return: `NULL` If connection closed.
 
 **Note** that memory of returned data is auto freed on the next
 call to [`ServerReq::readBytes()`](#serverreqreadbytes),
@@ -256,7 +262,7 @@ Make sure that the returned pointer is NOT freed manually.
 
 #### ServerReq::readf()
 ```c
-void (*readf)(ServerReq* req, const char* fmt, ...);
+bool (*readf)(ServerReq* req, const char* fmt, ...);
 ```
 Reads formatted input from request, much like scanf.
 Scans for values till an LF is encountered.
@@ -267,6 +273,7 @@ Use [`ServerReq::readBytes()`](#serverreqreadbytes) or
 - param: `res` Pointer to server response instance.
 - param: `fmt` Format string.
 - param: `args`.
+- return: `false` If connection closed.
 
 ### ServerRes
 ```c
@@ -274,8 +281,8 @@ typedef struct ServerRes ServerRes;
 
 struct ServerRes {
     sockfd_t clientfd;
-    void (*writeBytes) (ServerRes* res, const char* data, size_t size);
-    void (*writef)     (ServerRes* res, const char* fmt, ...);
+    bool (*writeBytes) (ServerRes* res, const char* data, size_t size);
+    bool (*writef)     (ServerRes* res, const char* fmt, ...);
     void (*end)        (ServerRes* res);
 };
 ```
@@ -293,25 +300,28 @@ res->end(res);
 sockfd_t clientfd;
 ```
 Client socket file descriptor.
+Is set to `0` if connection gets closed.
 - type: `sockfd_t` aka `int`.
 
 #### ServerRes::writeBytes()
 ```c
-void (*writeBytes)(ServerRes* res, const char* data, size_t size);
+bool (*writeBytes)(ServerRes* res, const char* data, size_t size);
 ```
 Writes raw bytes to response.
 - param: `res` Pointer to server response instance.
 - param: `data` Data to be written.
 - param: `size` Size of data in bytes.
+- return: `false` If connection closed.
 
 #### ServerRes::writef()
 ```c
-void (*writef)(ServerRes* res, const char* fmt, ...);
+bool (*writef)(ServerRes* res, const char* fmt, ...);
 ```
 Writes formatted output to response.
 - param: `res` Pointer to server response instance.
 - param: `fmt` Format string.
-- param: `args`
+- param: `args`.
+- return: `false` If connection closed.
 
 #### ServerRes::end()
 ```c

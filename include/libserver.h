@@ -25,6 +25,7 @@
 
 #include <stddef.h>        // size_t
 #include <inttypes.h>      // uint8_t, uint16_t, uint64_t, int64_t
+#include <stdbool.h>
 
 // from types.h: type definitions
 
@@ -134,7 +135,8 @@ struct ServerReq {
      */
     ipaddr_t addr;
     /**
-     * @brief Client socket file descriptor
+     * @brief Client socket file descriptor.
+     * Is set to `0` if connection gets closed.
      * @type sockfd_t aka int
      */
     sockfd_t clientfd;
@@ -144,6 +146,7 @@ struct ServerReq {
      * @param req Pointer to server request instance
      * @param size Size of data to be read in bytes
      * @return char* Memory auto managed. DO NOT free the return value.
+     * @return NULL If connection closed.
      */
     char* (*readBytes)(ServerReq* req, size_t size);
     /**
@@ -153,6 +156,7 @@ struct ServerReq {
      * Size of string is stored in ServerReq::size.
      * @param req Pointer to server request instance
      * @return char* Memory auto managed. DO NOT free the return value.
+     * @return NULL If connection closed.
      */
     char* (*readLine)(ServerReq* req);
     /**
@@ -162,8 +166,9 @@ struct ServerReq {
      * @param res Pointer to server response instance
      * @param fmt Format string
      * @param args
+     * @return false If connection closed
      */
-    void (*readf)(ServerReq* req, const char* fmt, ...) __attribute__((format(scanf, 2, 3)));
+    bool (*readf)(ServerReq* req, const char* fmt, ...) __attribute__((format(scanf, 2, 3)));
 };
 
 // from response.h: handle response
@@ -173,7 +178,8 @@ struct ServerReq {
  */
 struct ServerRes {
     /**
-     * @brief Client socket file descriptor
+     * @brief Client socket file descriptor.
+     * Is set to `0` if connection gets closed.
      * @type sockfd_t aka int
      */
     sockfd_t clientfd;
@@ -182,15 +188,17 @@ struct ServerRes {
      * @param res Pointer to server response instance
      * @param data Data to be written
      * @param size Size of data in bytes
+     * @return false If connection closed
      */
-    void (*writeBytes)(ServerRes* res, const char* data, size_t size);
+    bool (*writeBytes)(ServerRes* res, const char* data, size_t size);
     /**
      * @brief Writes formatted output to response
      * @param res Pointer to server response instance
      * @param fmt Format string
      * @param args
+     * @return false If connection closed
      */
-    void (*writef)(ServerRes* res, const char* fmt, ...) __attribute__((format(printf, 2, 3)));
+    bool (*writef)(ServerRes* res, const char* fmt, ...) __attribute__((format(printf, 2, 3)));
     /**
      * @brief Closes client socket file descriptor
      * @param res Pointer to server response instance
