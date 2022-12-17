@@ -90,14 +90,14 @@ struct Server {
     void (*const set_ipaddr)  (Server* sv, uint8_t a0, uint8_t a1, uint8_t a2, uint8_t a3);
     void (*const set_port)    (Server* sv, port_t port);
     void (*const listen)      (Server* sv, void (*const callback)(ipaddr_t, port_t));
-    void* _;
+    const void* const _;
 };
 ```
 Server struct type.
 
-The `void* _` encapsulates private data members of the `Server` type.
+The `const void* const _` encapsulates private data members of the `Server` type.
 
-As a convention, `void* _` indicates private members.
+As a convention, `const void* const _` indicates private members.
 They are auto managed. Modifying them may lead to undefined behaviour.
 
 Note that server functions are called wrt a server instance. Example:
@@ -182,9 +182,9 @@ Force exits threads on `^C`.
 typedef struct ServerReq ServerReq;
 
 struct ServerReq {
-    char* data;
-    size_t size;
-    sockfd_t clientfd;
+    char* const data;
+    size_t const size;
+    sockfd_t const clientfd;
     char* (*const readBytes) (ServerReq* req, size_t size);
     char* (*const readLine)  (ServerReq* req);
     bool  (*const readf)     (ServerReq* req, const char* fmt, ...);
@@ -200,7 +200,7 @@ Use either [`ServerReq::readBytes()`](#serverreqreadbytes),
 [`ServerReq::readf()`](#serverreqreadf).
 
 ```c
-char* data;
+char* const data;
 ```
 Data read from client.
 
@@ -208,20 +208,20 @@ Data read from client.
 
 #### ServerReq::size
 ```c
-size_t size;
+size_t const size;
 ```
 Size of data received from client.
 
 #### ServerReq::addr
 ```c
-ipaddr_t addr;
+ipaddr_t const addr;
 ```
 Client IPv4 address.
 - type: `ipaddr_t` aka `uint8_t[4]`.
 
 #### ServerReq::clientfd
 ```c
-sockfd_t clientfd;
+sockfd_t const clientfd;
 ```
 Client socket file descriptor.
 Is set to `0` if connection gets closed.
@@ -286,7 +286,7 @@ Use [`ServerReq::readBytes()`](#serverreqreadbytes) or
 typedef struct ServerRes ServerRes;
 
 struct ServerRes {
-    sockfd_t clientfd;
+    sockfd_t const clientfd;
     bool (*const writeBytes) (ServerRes* res, const char* data, size_t size);
     bool (*const writef)     (ServerRes* res, const char* fmt, ...);
     void (*const end)        (ServerRes* res);
@@ -303,7 +303,7 @@ res->end(res);
 
 #### ServerRes::clientfd
 ```c
-sockfd_t clientfd;
+sockfd_t const clientfd;
 ```
 Client socket file descriptor.
 Is set to `0` if connection gets closed.
