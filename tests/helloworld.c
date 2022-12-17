@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <string.h>
+
 #include "libserver.h"
 
 /**
@@ -16,6 +19,11 @@ int main(int argc, char *argv[])
 }
 
 void conn_handler(ServerReq* req, ServerRes* res) {
+    // read a full GET request, ends when line empty
+    while (true) {
+        char* line = req->readLine(req);
+        if (!strcmp(line, "")) break;
+    }
     res->writef(res, "HTTP/1.1 OK\r\n");
     res->writef(res, "Content-Type: text/plain\r\n");
     res->writef(res, "\r\n");
