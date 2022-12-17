@@ -1,6 +1,6 @@
 #include <stdlib.h>    // free
 
-#include "lib/libserver.h"
+#include "libserver.h"
 
 /**
  * @brief Handles connection.
