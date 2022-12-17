@@ -71,7 +71,7 @@ struct Server {
      * @param sv Pointer to Server struct
      * @param handler Callback function of prototype void (ServerReq*, ServerRes*)
      */
-    void (*set_handler)(Server* sv, void (*handler)(ServerReq*, ServerRes*));
+    void (*const set_handler)(Server* sv, void (*const handler)(ServerReq*, ServerRes*));
     /**
      * @brief Sets host IPv4 address. Example sv->set_addr(sv, 127, 0, 0, 1);
      * @param sv Pointer to Server struct
@@ -80,20 +80,20 @@ struct Server {
      * @param a2
      * @param a3
      */
-    void (*set_ipaddr)(Server* sv, uint8_t a0, uint8_t a1, uint8_t a2, uint8_t a3);
+    void (*const set_ipaddr)(Server* sv, uint8_t a0, uint8_t a1, uint8_t a2, uint8_t a3);
     /**
      * @brief Sets host port
      * @param sv Pointer to Server struct
      * @param port
      */
-    void (*set_port)(Server* sv, port_t port);
+    void (*const set_port)(Server* sv, port_t port);
     /**
      * @brief Listens for new connections.
      * Waits for all server threads to join. Force exits threads on ^C.
      * @param sv Pointer to Server struct
      * @param callback Called once after server is started. Callback is called on main thread, not on server threads.
      */
-    void (*listen)(Server* sv, void (*callback)(ipaddr_t, port_t));
+    void (*const listen)(Server* sv, void (*const callback)(ipaddr_t, port_t));
     /**
      * @brief Private server data
      * Auto managed. DO NOT modify.
@@ -148,7 +148,7 @@ struct ServerReq {
      * @return char* Memory auto managed. DO NOT free the return value.
      * @return NULL If connection closed.
      */
-    char* (*readBytes)(ServerReq* req, size_t size);
+    char* (*const readBytes)(ServerReq* req, size_t size);
     /**
      * @brief Reads a line of string from request.
      * A line of string is defined as a string ending with LF or CR LF.
@@ -158,7 +158,7 @@ struct ServerReq {
      * @return char* Memory auto managed. DO NOT free the return value.
      * @return NULL If connection closed.
      */
-    char* (*readLine)(ServerReq* req);
+    char* (*const readLine)(ServerReq* req);
     /**
      * @brief Reads formatted input from request, much like scanf.
      * Scans for values till an LF is encountered.
@@ -168,7 +168,7 @@ struct ServerReq {
      * @param args
      * @return false If connection closed
      */
-    bool (*readf)(ServerReq* req, const char* fmt, ...) __attribute__((format(scanf, 2, 3)));
+    bool (*const readf)(ServerReq* req, const char* fmt, ...) __attribute__((format(scanf, 2, 3)));
 };
 
 // from response.h: handle response
@@ -190,7 +190,7 @@ struct ServerRes {
      * @param size Size of data in bytes
      * @return false If connection closed
      */
-    bool (*writeBytes)(ServerRes* res, const char* data, size_t size);
+    bool (*const writeBytes)(ServerRes* res, const char* data, size_t size);
     /**
      * @brief Writes formatted output to response
      * @param res Pointer to server response instance
@@ -198,12 +198,12 @@ struct ServerRes {
      * @param args
      * @return false If connection closed
      */
-    bool (*writef)(ServerRes* res, const char* fmt, ...) __attribute__((format(printf, 2, 3)));
+    bool (*const writef)(ServerRes* res, const char* fmt, ...) __attribute__((format(printf, 2, 3)));
     /**
      * @brief Closes client socket file descriptor
      * @param res Pointer to server response instance
      */
-    void (*end)(ServerRes* res);
+    void (*const end)(ServerRes* res);
 };
 
 // from apifunc.h: misc api functions

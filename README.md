@@ -86,10 +86,10 @@ You'll hardly ever need to directly use a socket file descriptor.
 typedef struct Server Server;
 
 struct Server {
-    void (*set_handler) (Server* sv, void (*handler)(ServerReq*, ServerRes*));
-    void (*set_ipaddr)  (Server* sv, uint8_t a0, uint8_t a1, uint8_t a2, uint8_t a3);
-    void (*set_port)    (Server* sv, port_t port);
-    void (*listen)      (Server* sv, void (*callback)(ipaddr_t, port_t));
+    void (*const set_handler) (Server* sv, void (*const handler)(ServerReq*, ServerRes*));
+    void (*const set_ipaddr)  (Server* sv, uint8_t a0, uint8_t a1, uint8_t a2, uint8_t a3);
+    void (*const set_port)    (Server* sv, port_t port);
+    void (*const listen)      (Server* sv, void (*const callback)(ipaddr_t, port_t));
     void* _;
 };
 ```
@@ -127,7 +127,7 @@ Deletes server instance and frees resources.
 
 #### Server::set_handler()
 ```c
-void (*set_handler)(Server* sv, void (*handler)(ServerReq*, ServerRes*));
+void (*const set_handler)(Server* sv, void (*const handler)(ServerReq*, ServerRes*));
 ```
 Sets handler callback. The callback is called when a request is received.
 - param: `sv` Pointer to Server struct.
@@ -143,7 +143,7 @@ Handles the request and response.
 
 #### Server::set_ipaddr()
 ```c
-void (*set_ipaddr)(Server* sv, uint8_t a0, uint8_t a1, uint8_t a2, uint8_t a3);
+void (*const set_ipaddr)(Server* sv, uint8_t a0, uint8_t a1, uint8_t a2, uint8_t a3);
 ```
 Sets host IPv4 address. Example:
 ```c
@@ -159,7 +159,7 @@ Note that a new server instance has a default IPv4 address of `127.0.0.1`.
 
 #### Server::set_port()
 ```c
-void (*set_port)(Server* sv, port_t port);
+void (*const set_port)(Server* sv, port_t port);
 ```
 Sets host port
 - param: `sv` Pointer to Server struct.
@@ -169,7 +169,7 @@ Note that a new server instance has a default port of `8080`.
 
 #### Server::listen()
 ```c
-void (*listen)(Server* sv, void (*callback)(ipaddr_t, port_t));
+void (*const listen)(Server* sv, void (*const callback)(ipaddr_t, port_t));
 ```
 Listens for new connections.
 Waits for all server threads to join.
@@ -185,9 +185,9 @@ struct ServerReq {
     char* data;
     size_t size;
     sockfd_t clientfd;
-    char* (*readBytes) (ServerReq* req, size_t size);
-    char* (*readLine)  (ServerReq* req);
-    bool  (*readf)     (ServerReq* req, const char* fmt, ...);
+    char* (*const readBytes) (ServerReq* req, size_t size);
+    char* (*const readLine)  (ServerReq* req);
+    bool  (*const readf)     (ServerReq* req, const char* fmt, ...);
 };
 ```
 
@@ -229,7 +229,7 @@ Is set to `0` if connection gets closed.
 
 #### ServerReq::readBytes()
 ```c
-char* (*readBytes)(ServerReq* req, size_t size);
+char* (*const readBytes)(ServerReq* req, size_t size);
 ```
 Reads raw bytes from request.
 Data will be NULL terminated.
@@ -247,7 +247,7 @@ Make sure that the returned pointer is NOT freed manually.
 
 #### ServerReq::readLine()
 ```c
-char* (*readLine)(ServerReq* req);
+char* (*const readLine)(ServerReq* req);
 ```
 Reads a line of string from request.
 
@@ -268,7 +268,7 @@ Make sure that the returned pointer is NOT freed manually.
 
 #### ServerReq::readf()
 ```c
-bool (*readf)(ServerReq* req, const char* fmt, ...);
+bool (*const readf)(ServerReq* req, const char* fmt, ...);
 ```
 Reads formatted input from request, much like scanf.
 Scans for values till an LF is encountered.
@@ -287,9 +287,9 @@ typedef struct ServerRes ServerRes;
 
 struct ServerRes {
     sockfd_t clientfd;
-    bool (*writeBytes) (ServerRes* res, const char* data, size_t size);
-    bool (*writef)     (ServerRes* res, const char* fmt, ...);
-    void (*end)        (ServerRes* res);
+    bool (*const writeBytes) (ServerRes* res, const char* data, size_t size);
+    bool (*const writef)     (ServerRes* res, const char* fmt, ...);
+    void (*const end)        (ServerRes* res);
 };
 ```
 Server response struct type.
@@ -311,7 +311,7 @@ Is set to `0` if connection gets closed.
 
 #### ServerRes::writeBytes()
 ```c
-bool (*writeBytes)(ServerRes* res, const char* data, size_t size);
+bool (*const writeBytes)(ServerRes* res, const char* data, size_t size);
 ```
 Writes raw bytes to response.
 - param: `res` Pointer to server response instance.
@@ -321,7 +321,7 @@ Writes raw bytes to response.
 
 #### ServerRes::writef()
 ```c
-bool (*writef)(ServerRes* res, const char* fmt, ...);
+bool (*const writef)(ServerRes* res, const char* fmt, ...);
 ```
 Writes formatted output to response.
 - param: `res` Pointer to server response instance.
@@ -331,7 +331,7 @@ Writes formatted output to response.
 
 #### ServerRes::end()
 ```c
-void (*end)(ServerRes* res);
+void (*const end)(ServerRes* res);
 ```
 Closes client socket file descriptor.
 - param: `res` Pointer to server response instance.
