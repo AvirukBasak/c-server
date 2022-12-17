@@ -4,9 +4,15 @@ Simple server library in C.
 ## Usage
 - Build with `make`.
 - Copy library from `target/`.
-- See [api](#api) below or [test](tests/test.c) for example.
-- See the simpler [helloworld](tests/helloworld.c) server.
-- Start demo server with `make test`.
+- Read the api docs below.
+
+### Demos
+- [say-hello](demo/say-hello.c)
+- [name-n-age](demo/name-n-age.c)
+
+### Run test
+- Start test with `make test`.
+- Source code at [test](tests/test.c).
 
 ## API
 Do note that `structtype::member` is just a way to document different members of a struct.
