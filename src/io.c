@@ -25,7 +25,7 @@ void server_print_connlog(ServerReq* req)
     const char* datetime = NULL;
     printf("[%s] - %d.%d.%d.%d accepted\n",
         datetime = server_std_gettime(),
-        req->addr[0], req->addr[1], req->addr[2], req->addr[3],
+        req->addr[0], req->addr[1], req->addr[2], req->addr[3]
     );
     free((void*) datetime);
 }

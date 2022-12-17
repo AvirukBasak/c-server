@@ -33,7 +33,7 @@ void ServerRes_delete(ServerRes** res)
 
 bool ServerRes_writeBytes(ServerRes* res, const char* data, size_t size)
 {
-    if (!req->clientfd) return false;
+    if (!res->clientfd) return false;
     server_socket_try(res->clientfd, "client socket fd invalid");
     send(res->clientfd, data, size, 0);
     return true;
@@ -42,7 +42,7 @@ bool ServerRes_writeBytes(ServerRes* res, const char* data, size_t size)
 bool ServerRes_writef(ServerRes* res, const char* fmt, ...)
 // https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/va-arg-va-copy-va-end-va-start?view=msvc-170#example
 {
-    if (!req->clientfd) return false;
+    if (!res->clientfd) return false;
     va_list args;                                 // original args
     va_list args_copy;                            // copy of args for 2nd pass
     va_start(args, fmt);                          // init original args

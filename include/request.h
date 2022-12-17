@@ -2,6 +2,7 @@
 #define __REQUEST_H__
 
 #include <stddef.h>    // size_t
+#include <stdbool.h>   // bool
 
 #include "types.h"
 #include "server.h"
@@ -14,7 +15,7 @@ struct ServerReq {
     sockfd_t clientfd;
     char* (*readBytes) (ServerReq* req, size_t size);
     char* (*readLine)  (ServerReq* req);
-    void  (*readf)     (ServerReq* req, const char* fmt, ...) __attribute__((format(scanf, 2, 3)));
+    bool  (*readf)     (ServerReq* req, const char* fmt, ...) __attribute__((format(scanf, 2, 3)));
 };
 
 ServerReq* ServerReq_new(sockfd_t clientfd, ipaddr_t addr);
@@ -22,6 +23,6 @@ void ServerReq_delete(ServerReq** req);
 
 char* ServerReq_readBytes (ServerReq* req, size_t size);
 char* ServerReq_readLine  (ServerReq* req);
-void ServerReq_readf      (ServerReq* req, const char* fmt, ...) __attribute__((format(scanf, 2, 3)));
+bool ServerReq_readf      (ServerReq* req, const char* fmt, ...) __attribute__((format(scanf, 2, 3)));
 
 #endif
