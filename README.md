@@ -41,6 +41,9 @@ The difference b/w functions like `StructType_foo` and `StructType::foo` is desc
 - [`ServerReq::size`](#serverreqsize)
 - [`ServerReq::addr`](#serverreqaddr)
 - [`ServerReq::clientfd`](#serverreqclientfd)
+- [`ServerReq::readBytes()`](#serverreqreadbytes)
+- [`ServerReq::readLine()`](#serverreqreadline)
+- [`ServerReq::readf()`](#serverreqreadf)
 
 #### Struct ServerRes
 - [`ServerRes::clientfd`](#serverresclientfd)
@@ -182,10 +185,15 @@ struct ServerReq {
 Server request struct type.
 
 #### ServerReq::data
+**DEPRECATED** Is used internally.
+Use either [`ServerReq::readBytes()`](#serverreqreadbytes),
+[`ServerReq::readLine()`](#serverreqreadline) or
+[`ServerReq::readf()`](#serverreqreadf).
+
 ```c
 char* data;
 ```
-Data recieved from client.
+Data read from client.
 
 **Note** that data will be `NULL` terminated.
 
@@ -208,6 +216,57 @@ sockfd_t clientfd;
 ```
 Client socket file descriptor.
 - type: `sockfd_t` aka `int`.
+
+#### ServerReq::readBytes()
+```c
+char* (*readBytes)(ServerReq* req, size_t size);
+```
+Reads raw bytes from request.
+Data will be NULL terminated.
+- param: `req` Pointer to server request instance.
+- param: `size` Size of data to be read in bytes.
+- return: `char*` Memory auto managed. DO NOT free the return value.
+
+**Note** that memory of returned data is auto freed on the next
+call to [`ServerReq::readBytes()`](#serverreqreadbytes),
+[`ServerReq::readLine()`](#serverreqreadline) or
+[`ServerReq::readf()`](#serverreqreadf).
+
+Make sure that the returned pointer is NOT freed manually.
+
+#### ServerReq::readLine()
+```c
+char* (*readLine)(ServerReq* req);
+```
+Reads a line of string from request.
+
+A line of string is defined as a string ending with `LF` or `CR` `LF`.
+Returned string will NOT contain the line endings.
+
+Size of string is stored in [`ServerReq::size`](#serverreqsize).
+- param: `req` Pointer to server request instance.
+- return: `char*` Memory auto managed. DO NOT free the return value.
+
+**Note** that memory of returned data is auto freed on the next
+call to [`ServerReq::readBytes()`](#serverreqreadbytes),
+[`ServerReq::readLine()`](#serverreqreadline) or
+[`ServerReq::readf()`](#serverreqreadf).
+
+Make sure that the returned pointer is NOT freed manually.
+
+#### ServerReq::readf()
+```c
+void (*readf)(ServerReq* req, const char* fmt, ...);
+```
+Reads formatted input from request, much like scanf.
+Scans for values till an LF is encountered.
+
+**WARNING** Using readf for strings is as unsafe as scanf.
+Use [`ServerReq::readBytes()`](#serverreqreadbytes) or
+[`ServerReq::readLine()`](#serverreqreadline) instead.
+- param: `res` Pointer to server response instance.
+- param: `fmt` Format string.
+- param: `args`.
 
 ### ServerRes
 ```c
