@@ -14,10 +14,10 @@
  * it doesn't matter if member different names are used in libserver.h.
  *
  * For example `struct Server::_` in libserver.h is actually implemented
- * as`struct Server::priv` in server.h.
+ * as `struct Server::priv` in server.h.
  *
- * As a convention, `void* _;` indicates private members. They are auto
- * managed. Modifying them may lead to undefined behaviour.
+ * As a convention, `const void* const _;` indicates private members. They
+ * are auto managed. Modifying them may lead to undefined behaviour.
  */
 
 #ifndef __LIBSERVER_H__
@@ -98,7 +98,7 @@ struct Server {
      * @brief Private server data
      * Auto managed. DO NOT modify.
      */
-    void* _;
+    const void* const _;
 };
 
 /**
@@ -124,22 +124,22 @@ struct ServerReq {
      * @deprecated Use either readBytes, readLine or readf.
      * NOTE that this data will be NULL terminated.
      */
-    char* data;
+    char* const data;
     /**
      * @brief Size of data received from client
      */
-    size_t size;
+    size_t const size;
     /**
      * @brief Client IPv4 address
      * @type ipaddr_t aka uint8_t[4]
      */
-    ipaddr_t addr;
+    ipaddr_t const addr;
     /**
      * @brief Client socket file descriptor.
      * Is set to `0` if connection gets closed.
      * @type sockfd_t aka int
      */
-    sockfd_t clientfd;
+    sockfd_t const clientfd;
     /**
      * @brief Reads raw bytes from request.
      * Data will be NULL terminated.
@@ -182,7 +182,7 @@ struct ServerRes {
      * Is set to `0` if connection gets closed.
      * @type sockfd_t aka int
      */
-    sockfd_t clientfd;
+    sockfd_t const clientfd;
     /**
      * @brief Writes raw bytes to response
      * @param res Pointer to server response instance
