@@ -10,15 +10,13 @@
 #include "request.h"
 
 ServerReq* ServerReq_new(
-    char *data,         // request data
-    size_t size,        // request data size
     sockfd_t clientfd,  // clientfd, response destination
     ipaddr_t addr       // client ip address
 ) {
     ServerReq* req = malloc(sizeof(ServerReq));
     if (!req) server_print_err("null pointer", E_NULLPTR);
-    req->data = data;
-    req->size = size;
+    req->data = NULL;
+    req->size = 0;
     server_socket_try(clientfd, "client socket fd invalid");
     req->clientfd = clientfd;
     req->addr[0] = addr[0];
@@ -33,16 +31,22 @@ ServerReq* ServerReq_new(
 
 char* ServerReq_readBytes(ServerReq* req, size_t size)
 {
+    if (!req->clientfd) return NULL;
     if (req->data) free(req->data);
     req->size = size;
     req->data = malloc(size +1);
-    recv(req->clientfd, req->data, req->size, 0);
+    size_t sz = recv(req->clientfd, req->data, req->size, 0);
+    if (!sz || sz < req->size) {
+        server_print_connclose(req);
+        req->clientfd = 0;
+    }
     req->data[size] = 0;
     return req->data;
 }
 
 char* ServerReq_readLine(ServerReq* req)
 {
+    if (!req->clientfd) return NULL;
     if (req->data) free(req->data);
     req->size = 0;
     req->data = malloc(1);
@@ -50,7 +54,13 @@ char* ServerReq_readLine(ServerReq* req)
     char c0, c1 = 0;
     while (true) {
         c0 = c1;
-        recv(req->clientfd, &c1, 1, 0);
+        size_t sz = recv(req->clientfd, &c1, 1, 0);
+        if (!sz) {
+            server_print_connclose(req);
+            req->clientfd = 0;
+            req->data[req->size] = 0;
+            return req->data;
+        }
         if (c1 == '\n' || (signed char) c1 == EOF) {
             if (c0 == '\r') req->data[--req->size] = 0;
             else req->data[req->size] = 0;
@@ -62,14 +72,16 @@ char* ServerReq_readLine(ServerReq* req)
     return NULL;
 }
 
-void ServerReq_readf(ServerReq* req, const char* fmt, ...)
+bool ServerReq_readf(ServerReq* req, const char* fmt, ...)
 {
+    if (!req->clientfd) return false;
     va_list args;                      // args
     va_start(args, fmt);               // init args
     char* line = req->readLine(req);
     vsscanf(line, fmt, args);
     va_end(args);                      // end args
     free(line);                        // free buffer
+    return true;
 }
 
 void ServerReq_delete(ServerReq** req)
