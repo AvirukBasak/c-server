@@ -19,7 +19,7 @@ void server_sigpipe_handler(int signum)
 {
     if (signum != SIGPIPE) return;
 #ifdef DEBUG
-    fprintf(stderr, "Received SIGPIPE\n");
+    fprintf(stderr, "libserver: recieved SIGPIPE\n");
 #else
     signal(SIGPIPE, SIG_IGN);
     return;
