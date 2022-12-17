@@ -80,7 +80,6 @@ bool ServerReq_readf(ServerReq* req, const char* fmt, ...)
     char* line = req->readLine(req);
     vsscanf(line, fmt, args);
     va_end(args);                      // end args
-    free(line);                        // free buffer
     return true;
 }
 
