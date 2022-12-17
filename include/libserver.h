@@ -142,17 +142,27 @@ struct ServerReq {
      * Data will be NULL terminated.
      * @param req Pointer to server request instance
      * @param size Size of data to be read in bytes
-     * @return char* Remember to free it.
+     * @return char* Memory auto managed. DO NOT free the return value.
      */
     char* (*readBytes)(ServerReq* req, size_t size);
     /**
      * @brief Reads a line of string from request.
      * A line of string is defined as a string ending with LF or CR LF.
      * Returned string will NOT contain the line endings.
+     * Size of string is stored in ServerReq::size.
      * @param req Pointer to server request instance
-     * @return char* Remember to free it.
+     * @return char* Memory auto managed. DO NOT free the return value.
      */
     char* (*readLine)(ServerReq* req);
+    /**
+     * @brief Read formatted input from request, much like scanf.
+     * Starts scanning for values after an LF is encountered.
+     * WARNING: Using readf for strings is as unsafe as scanf. Use readBytes or readLine instead.
+     * @param res Pointer to server response instance
+     * @param fmt Format string
+     * @param args
+     */
+    void (*readf)(ServerReq* req, const char* fmt, ...) __attribute__(format(scanf, 2, 3)));
 };
 
 // from response.h: handle response

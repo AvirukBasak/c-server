@@ -1,5 +1,6 @@
-#include <stdlib.h>    // malloc
-#include <stdbool.h>   // bool
+#include <stdlib.h>      // malloc, realloc
+#include <stdbool.h>     // bool
+#include <stdarg.h>      // va_*
 
 #include "types.h"
 #include "errcodes.h"
@@ -26,23 +27,55 @@ ServerReq* ServerReq_new(
     req->addr[3] = addr[3];
     req->readBytes = ServerReq_readBytes;
     req->readLine = ServerReq_readLine;
+    req->readf = ServerReq_readf;
     return req;
 }
 
 char* ServerReq_readBytes(ServerReq* req, size_t size)
 {
-    return NULL;
+    if (req->data) free(req->data);
+    req->size = size;
+    req->data = malloc(size +1);
+    recv(req->clientfd, req->data, req->size, 0);
+    req->data[size] = 0;
+    return req->data;
 }
 
 char* ServerReq_readLine(ServerReq* req)
 {
+    if (req->data) free(req->data);
+    req->size = 0;
+    req->data = malloc(1);
+    if (!req->data) server_print_err("null pointer", E_NULLPTR);
+    char c0, c1 = 0;
+    while (true) {
+        c0 = c1;
+        recv(req->clientfd, &c1, 1, 0);
+        if (c1 == '\n' || (signed char) c1 == EOF) {
+            if (c0 == '\r') req->data[--req->size] = 0;
+            else req->data[req->size] = 0;
+            return req->data;
+        }
+        req->data[req->size] = c1;
+        req->data = realloc(req->data, ++req->size +1);
+    }
     return NULL;
+}
+
+void ServerReq_readf(ServerReq* req, const char* fmt, ...)
+{
+    va_list args;                      // args
+    va_start(args, fmt);               // init args
+    char* line = req->readLine(req);
+    vsscanf(line, fmt, args);
+    va_end(args);                      // end args
+    free(line);                        // free buffer
 }
 
 void ServerReq_delete(ServerReq** req)
 {
     if (!req && !*req) return;
-    free((*req)->data);
+    if ((*req)->data) free((*req)->data);
     free(*req);
     *req = NULL;
 }
