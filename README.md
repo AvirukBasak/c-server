@@ -340,7 +340,7 @@ Closes client socket file descriptor.
 
 #### server_gettime()
 ```c
-const char* server_gettime();
+char* server_gettime();
 ```
 Gets current date and time. Useful for logs.
 - return: `char*` Remember to free it.

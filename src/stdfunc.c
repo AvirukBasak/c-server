@@ -19,7 +19,7 @@ char server_std_to_hex(const uint8_t _4bits)
     else abort();
 }
 
-const char* server_std_gettime()
+char* server_std_gettime()
 {
     const char* months[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
     char* nowtime_utc = malloc(strlen("YYYY-MM-DD HH:MM:SS +UTC") +1);

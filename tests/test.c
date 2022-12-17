@@ -93,7 +93,7 @@ void write_data(ServerReq* req, ServerRes* res) {
 }
 
 void write_time(ServerReq* req, ServerRes* res) {
-    const char* datetime = server_gettime();
+    char* datetime = server_gettime();
     res->writef(res, "Server Time: %s\n", datetime);
-    free((void*) datetime);
+    free(datetime);
 }

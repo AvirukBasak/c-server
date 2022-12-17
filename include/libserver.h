@@ -212,6 +212,6 @@ struct ServerRes {
  * @brief Gets current date and time. Useful for logs.
  * @return char* Remember to free it.
  */
-const char* server_gettime();
+char* server_gettime();
 
 #endif
