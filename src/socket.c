@@ -44,18 +44,6 @@ sockfd_t server_socket_listen(ipaddr_t addr, port_t port) {
     return hostfd;
 }
 
-bool server_socket_endreq(const char* data, size_t sz)
-{
-    if (data[sz -1] == 0) return true;                            // null
-    if ((signed char) data[sz -1] == EOF) return true;            // end of file
-    if (sz >= 4
-     && data[sz -4] == '\r' && data[sz -3] == '\n'
-     && data[sz -2] == '\r' && data[sz -1] == '\n') return true;  // http request end
-    if (sz >= 2
-     && data[sz -2] == '\n' && data[sz -1] == '\n') return true;  // custom request end
-    return false;
-}
-
 ServerReq* server_socket_accept(sockfd_t hostfd)
 {
     server_socket_try(hostfd, "host socket fd invalid");
@@ -71,26 +59,7 @@ ServerReq* server_socket_accept(sockfd_t hostfd)
     addr[1] = ((uint8_t*) &sin_addr)[1];
     addr[2] = ((uint8_t*) &sin_addr)[2];
     addr[3] = ((uint8_t*) &sin_addr)[3];
-    char* data = NULL;
-    size_t data_sz = 0;
-    bool endreq = false;
-    char* socket_buffer = malloc(SOCK_RECVLEN +1);
-    do {
-        size_t sz = recv(clientfd, socket_buffer, SOCK_RECVLEN, 0);
-        socket_buffer[sz] = 0;
-        // connection closed, signalled by 0 clientfd
-        if (!sz) {
-            free(socket_buffer);
-            return ServerReq_new(data, data_sz, 0, addr);
-        }
-        endreq = server_socket_endreq(socket_buffer, sz);
-        data = realloc(data, data_sz +sz +1);
-        memcpy(&data[data_sz], socket_buffer, sz);
-        data_sz += sz;
-        data[data_sz] = 0;
-    } while(!endreq);
-    free(socket_buffer);
-    return ServerReq_new(data, data_sz, clientfd, addr);
+    return ServerReq_new(clientfd, addr);
 }
 
 void server_socket_close(sockfd_t sockfd)
