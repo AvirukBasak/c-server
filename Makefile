@@ -10,6 +10,7 @@ TARGET_DIR  := target
 LIB_DIR     := lib
 TEST_DIR    := tests
 INCLUDE_DIR := include
+DEMO_DIR    := demo
 
 # compiler options
 
@@ -76,16 +77,25 @@ test: rel $(TESTSRC)
 	@$(CC) $(CFLAGS) -I $(TARGET_DIR) $(TEST_DIR)/test.$(SRCEXT) -o $(TEST_DIR)/test-rel.out -L$(TARGET_DIR) -l$(LIB_NAME) $(LIB)
 	./$(TEST_DIR)/test-rel.out
 
-# test in debug mode in gdb
+## test in debug mode in gdb
 testdbg: testdbg-build
 	$(DBG) $(TEST_DIR)/test-dbg.out
 
-# find memory leaks w/ -fsanitize
+## find memory leaks w/ -fsanitize
 testmleak: testdbg-build
 	@ASAN_OPTIONS=detect_leaks=1 ./$(TEST_DIR)/test-dbg.out
 
 testdbg-build: dbg $(TESTSRC)
 	@$(CC) $(CDBGFLAGS) -I $(TARGET_DIR) $(DBG_OBJECTS) $(TEST_DIR)/test.$(SRCEXT) -o $(TEST_DIR)/test-dbg.out $(LIB)
+
+## demo
+demo-name-age: $(DEMO_DIR)/name-n-age.c dbg
+	@$(CC) $(CDBGFLAGS) -I $(TARGET_DIR) $(DEMO_DIR)/name-n-age.c -o $(DEMO_DIR)/name-n-age.out -L$(TARGET_DIR) -l$(LIB_NAME)-dbg $(LIB)
+	@ASAN_OPTIONS=detect_leaks=1 ./$(DEMO_DIR)/name-n-age.out
+
+demo-say-hello: $(DEMO_DIR)/say-hello.c dbg
+	@$(CC) $(CDBGFLAGS) -I $(TARGET_DIR) $(DEMO_DIR)/say-hello.c -o $(DEMO_DIR)/say-hello.out -L$(TARGET_DIR) -l$(LIB_NAME)-dbg $(LIB)
+	@ASAN_OPTIONS=detect_leaks=1 ./$(DEMO_DIR)/say-hello.out
 
 ## mkdirp
 
@@ -99,10 +109,12 @@ clean:
 	@cd $(SRC_DIR) && $(MAKE) clean
 	@cd $(LIB_DIR) && $(MAKE) clean
 	@rm -rf $(TEST_DIR)/*.out
+	@rm -rf $(DEMO_DIR)/*.out
 
 cleaner:
 	@cd $(SRC_DIR) && $(MAKE) cleaner
 	@cd $(LIB_DIR) && $(MAKE) cleaner
 	@rm -rf $(TEST_DIR)/*.out
+	@rm -rf $(DEMO_DIR)/*.out
 	@rm -rf $(BUILD_DIR)
 	@rm -rf $(TARGET_DIR)
