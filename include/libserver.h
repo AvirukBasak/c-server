@@ -162,7 +162,7 @@ struct ServerReq {
      * @param fmt Format string
      * @param args
      */
-    void (*readf)(ServerReq* req, const char* fmt, ...) __attribute__(format(scanf, 2, 3)));
+    void (*readf)(ServerReq* req, const char* fmt, ...) __attribute__((format(scanf, 2, 3)));
 };
 
 // from response.h: handle response

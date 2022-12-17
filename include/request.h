@@ -14,7 +14,7 @@ struct ServerReq {
     sockfd_t clientfd;
     char* (*readBytes) (ServerReq* req, size_t size);
     char* (*readLine)  (ServerReq* req);
-    char* (*readf)     (ServerReq* req, const char* fmt, ...) __attribute__(format(scanf, 2, 3)));
+    void  (*readf)     (ServerReq* req, const char* fmt, ...) __attribute__((format(scanf, 2, 3)));
 };
 
 ServerReq* ServerReq_new(char *data, size_t size, sockfd_t clientfd, ipaddr_t addr);
@@ -22,6 +22,6 @@ void ServerReq_delete(ServerReq** req);
 
 char* ServerReq_readBytes (ServerReq* req, size_t size);
 char* ServerReq_readLine  (ServerReq* req);
-void ServerReq_readf      (ServerReq* req, const char* fmt, ...) __attribute__(format(scanf, 2, 3)));
+void ServerReq_readf      (ServerReq* req, const char* fmt, ...) __attribute__((format(scanf, 2, 3)));
 
 #endif
