@@ -59,8 +59,8 @@ bool ServerRes_writef(ServerRes* res, const char* fmt, ...)
 
 void ServerRes_end(ServerRes* res)
 {
-    if (res->clientfd < 0) return;
+    if (!res->clientfd) return;
     server_socket_try(res->clientfd, "client socket fd invalid");
     close(res->clientfd);
-    res->clientfd = -1;
+    res->clientfd = 0;
 }

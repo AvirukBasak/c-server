@@ -33,14 +33,17 @@ char* ServerReq_readBytes(ServerReq* req, size_t size)
 {
     if (!req->clientfd) return NULL;
     if (req->data) free(req->data);
-    req->size = size;
     req->data = malloc(size +1);
-    size_t sz = recv(req->clientfd, req->data, req->size, 0);
-    if (!sz || sz < req->size) {
+    size_t sz = req->size = recv(req->clientfd, req->data, size, 0);
+    while (sz && req->size < size) {
+        sz = recv(req->clientfd, req->data + req->size, size - req->size, 0);
+        req->size += sz;
+    }
+    if (!sz) {
         server_print_connclose(req);
         req->clientfd = 0;
     }
-    req->data[size] = 0;
+    req->data[req->size] = 0;
     return req->data;
 }
 
