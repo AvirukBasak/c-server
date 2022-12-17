@@ -86,7 +86,7 @@ testmleak: testdbg-build
 	@ASAN_OPTIONS=detect_leaks=1 ./$(TEST_DIR)/test-dbg.out
 
 testdbg-build: dbg $(TESTSRC)
-	@$(CC) $(CDBGFLAGS) -I $(TARGET_DIR) $(DBG_OBJECTS) $(TEST_DIR)/test.$(SRCEXT) -o $(TEST_DIR)/test-dbg.out $(LIB)
+	@$(CC) $(CDBGFLAGS) -I $(TARGET_DIR) $(TEST_DIR)/test.$(SRCEXT) -o $(TEST_DIR)/test-dbg.out -L$(TARGET_DIR) -l$(LIB_NAME)-dbg $(LIB)
 
 ## demo
 demo-name-age: $(DEMO_DIR)/name-n-age.c dbg
