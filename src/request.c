@@ -32,6 +32,8 @@ char* ServerReq_readBytes(ServerReq* req, size_t size)
     if (!req->clientfd) return NULL;
     if (req->data) free(req->data);
     req->data = malloc(size +1);
+#ifdef LEGACY_READBYTES
+    // legacy algo for reading `size` bytes
     size_t sz = req->size = recv(req->clientfd, req->data, size, 0);
     while (sz && req->size < size) {
         sz = recv(req->clientfd, req->data + req->size, size - req->size, 0);
@@ -41,6 +43,10 @@ char* ServerReq_readBytes(ServerReq* req, size_t size)
         server_print_connclose(req);
         req->clientfd = 0;
     }
+#else
+    // MSG_WAITALL: wait till all bytes are recieved, faster than doing multiple recv
+    req->size = recv(req->clientfd, req->data, size, MSG_WAITALL);
+#endif
     req->data[req->size] = 0;
     return req->data;
 }
