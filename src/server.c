@@ -80,8 +80,9 @@ void Server_listen(Server* sv, void (*callback)(ipaddr_t, port_t))
         if (!req) continue;
         server_print_connlog(req);
         ServerRes* res = ServerRes_new(req->clientfd);
-        if (!req) continue;
+        if (!res) continue;
         sv->priv->handler(req, res);
+        res->end(res);
         ServerReq_delete(&req);
         ServerRes_delete(&res);
     }
