@@ -1,12 +1,12 @@
 #include <stdlib.h>      // malloc
-#include <unistd.h>      // close
-#include <stdbool.h>     // bool
-#include <sys/socket.h>  // send
 #include <stdarg.h>      // va_*
+#include <unistd.h>      // close
+#include <sys/socket.h>  // send
 
+#include "response.h"
 #include "errcodes.h"
 #include "io.h"
-#include "response.h"
+#include "socket.h"
 
 ServerRes* ServerRes_new(sockfd_t clientfd)
 {

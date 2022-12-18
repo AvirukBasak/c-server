@@ -1,17 +1,13 @@
-#include <stdio.h>      // fprintf
-#include <string.h>     // memset, strncmp
-#include <stdlib.h>     // realloc
+#include <string.h>     // memset
 #include <inttypes.h>   // uint32_t
 #include <unistd.h>     // close
-#include <stdbool.h>    // bool
-#include <errno.h>      // errno
+#include <sys/socket.h> // socket, bind, listen, accept, recv, send
+#include <arpa/inet.h>  // struct sockaddr, struct sockaddr_in, htonl, htons
 
-#include "types.h"
+#include "socket.h"
 #include "errcodes.h"
 #include "io.h"
 #include "request.h"
-#include "server.h"
-#include "socket.h"
 
 int server_socket_die(int retval, const char* msg) {
     if (retval <= -1)

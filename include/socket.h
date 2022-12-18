@@ -2,11 +2,8 @@
 #define __SOCKET_H__
 
 #include <stdbool.h>
-#include <sys/socket.h>    // socket, bind, listen, accept, recv, send
-#include <arpa/inet.h>     // struct sockaddr, struct sockaddr_in, htonl, htons
 
 #include "types.h"
-#include "server.h"
 #include "request.h"
 
 #define SOCK_BACKLOG (100)

@@ -5,7 +5,7 @@
 #include <inttypes.h> // uint64_t, int64_t
 #include <stdbool.h>  // bool
 
-#include "socket.h"
+#include "types.h"
 
 struct ServerRes {
     sockfd_t clientfd;

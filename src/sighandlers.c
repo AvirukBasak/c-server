@@ -1,4 +1,4 @@
-#include <unistd.h>    // SIG*
+#include <unistd.h>    // signal, SIG*, sig_atomic_t
 #include <stdio.h>     // printf, fprintf
 #include <stdlib.h>    // exit
 #include <stdbool.h>   // bool

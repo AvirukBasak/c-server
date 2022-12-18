@@ -5,8 +5,6 @@
 #include <stdbool.h>   // bool
 
 #include "types.h"
-#include "server.h"
-#include "socket.h"
 
 struct ServerReq {
     char* data;

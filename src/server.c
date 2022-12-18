@@ -1,11 +1,10 @@
 #include <stdlib.h>    // malloc, free
 #include <stdbool.h>   // bool
 
-#include "types.h"
+#include "server.h"
 #include "errcodes.h"
 #include "io.h"
 #include "socket.h"
-#include "server.h"
 #include "request.h"
 #include "response.h"
 #include "stdfunc.h"

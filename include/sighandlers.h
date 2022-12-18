@@ -1,7 +1,7 @@
 #ifndef __SIGHANDLERS_H__
 #define __SIGHANDLERS_H__
 
-#include <unistd.h>    // signal, SIG*, sig_atomic_t
+#include <unistd.h>    // SIG*, sig_atomic_t
 
 extern volatile sig_atomic_t sigint_stop;
 

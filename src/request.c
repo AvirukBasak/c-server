@@ -1,13 +1,11 @@
-#include <stdlib.h>      // malloc, realloc
-#include <stdbool.h>     // bool
+#include <stdlib.h>      // malloc, realloc, free
 #include <stdarg.h>      // va_*
+#include <sys/socket.h>  // recv, send
 
-#include "types.h"
+#include "request.h"
 #include "errcodes.h"
 #include "io.h"
-#include "server.h"
 #include "socket.h"
-#include "request.h"
 
 ServerReq* ServerReq_new(
     sockfd_t clientfd,  // clientfd, response destination
