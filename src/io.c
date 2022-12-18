@@ -34,7 +34,7 @@ void server_print_connclose(ServerReq* req)
 {
     // connection closed by client
     char* datetime = NULL;
-    printf("[%s] - %d.%d.%d.%d client closed connection\n",
+    printf("[%s] - %d.%d.%d.%d closed\n",
         datetime = server_std_gettime(),
         req->addr[0], req->addr[1], req->addr[2], req->addr[3]
     );
