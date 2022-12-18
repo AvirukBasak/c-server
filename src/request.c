@@ -13,11 +13,11 @@ ServerReq* ServerReq_new(
     sockfd_t clientfd,  // clientfd, response destination
     ipaddr_t addr       // client ip address
 ) {
+    if (!server_socket_isvalid(clientfd)) return NULL;
     ServerReq* req = malloc(sizeof(ServerReq));
     if (!req) server_print_err("null pointer", E_NULLPTR);
     req->data = NULL;
     req->size = 0;
-    server_socket_try(clientfd, "client socket fd invalid");
     req->clientfd = clientfd;
     req->addr[0] = addr[0];
     req->addr[1] = addr[1];

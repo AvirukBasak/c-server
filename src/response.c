@@ -10,9 +10,9 @@
 
 ServerRes* ServerRes_new(sockfd_t clientfd)
 {
+    if (!server_socket_isvalid(clientfd)) return NULL;
     ServerRes* res = malloc(sizeof(ServerRes));
     if (!res) server_print_err("null pointer", E_NULLPTR);
-    server_socket_try(clientfd, "client socket fd invalid");
     res->clientfd = clientfd;
     res->writeBytes = ServerRes_writeBytes;
     res->writef = ServerRes_writef;
@@ -23,10 +23,8 @@ ServerRes* ServerRes_new(sockfd_t clientfd)
 void ServerRes_delete(ServerRes** res)
 {
     if (!res && !*res) return;
-    if ((*res)->clientfd >= 0) {
-        server_socket_try((*res)->clientfd, "client socket fd invalid");
+    if (server_socket_isvalid((*res)->clientfd))
         close((*res)->clientfd);
-    }
     free(*res);
     *res = NULL;
 }
@@ -34,8 +32,8 @@ void ServerRes_delete(ServerRes** res)
 bool ServerRes_writeBytes(ServerRes* res, const char* data, size_t size)
 {
     if (!res->clientfd) return false;
-    server_socket_try(res->clientfd, "client socket fd invalid");
-    send(res->clientfd, data, size, 0);
+    if (server_socket_isvalid(res->clientfd))
+        send(res->clientfd, data, size, 0);
     return true;
 }
 
@@ -52,7 +50,8 @@ bool ServerRes_writef(ServerRes* res, const char* fmt, ...)
     char* buffer = malloc(size +2);               // allocate required bytes
     vsnprintf(buffer, size +1, fmt, args_copy);   // write to buffer from copy
     va_end(args_copy);                            // end copy
-    send(res->clientfd, buffer, size, 0);         // send off data
+    if (server_socket_isvalid(res->clientfd))
+        send(res->clientfd, buffer, size, 0);     // send off data
     free(buffer);                                 // free buffer
     return true;
 }
@@ -60,7 +59,7 @@ bool ServerRes_writef(ServerRes* res, const char* fmt, ...)
 void ServerRes_end(ServerRes* res)
 {
     if (!res->clientfd) return;
-    server_socket_try(res->clientfd, "client socket fd invalid");
-    close(res->clientfd);
+    if (server_socket_isvalid(res->clientfd))
+        close(res->clientfd);
     res->clientfd = 0;
 }
