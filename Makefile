@@ -97,6 +97,10 @@ demo-say-hello: $(DEMO_DIR)/say-hello.c dbg
 	@$(CC) $(CDBGFLAGS) -I $(TARGET_DIR) $(DEMO_DIR)/say-hello.c -o $(DEMO_DIR)/say-hello.out -L$(TARGET_DIR) -l$(LIB_NAME)-dbg $(LIB)
 	@ASAN_OPTIONS=detect_leaks=1 ./$(DEMO_DIR)/say-hello.out
 
+demo-read-bytes: $(DEMO_DIR)/read-bytes.c dbg
+	@$(CC) $(CDBGFLAGS) -I $(TARGET_DIR) $(DEMO_DIR)/read-bytes.c -o $(DEMO_DIR)/read-bytes.out -L$(TARGET_DIR) -l$(LIB_NAME)-dbg $(LIB)
+	@ASAN_OPTIONS=detect_leaks=1 ./$(DEMO_DIR)/read-bytes.out
+
 ## mkdirp
 
 mkdirp:
